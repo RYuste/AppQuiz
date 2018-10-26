@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">APPQuiz</string>
+    <string name="title_activity_resumen">Home</string>
+    <string name="action_settings">About me</string>
+    <string name="title_activity_acercade">About me</string>
+    <string name="title_activity_listado_preguntas">" List of Questions"</string>
+    <string name="title_activity_nueva_pregunta">New Question</string>
+</resources>
