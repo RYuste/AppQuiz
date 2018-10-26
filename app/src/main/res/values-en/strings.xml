@@ -6,4 +6,9 @@
     <string name="title_activity_acercade">About me</string>
     <string name="title_activity_listado_preguntas">" List of Questions"</string>
     <string name="title_activity_nueva_pregunta">New Question</string>
+    <string name="creadoPor_AcercaDe">Create for: Rafael Yuste Jiménez</string>
+    <string name="version_AcercaDe">Version: 1.0</string>
+    <string name="eMail_AcercaDe">Contact mail: teka_ryj@hotmail.com</string>
+    <string name="derechos_AcercaDe">© 2018 Android Studio.  All rights reserved.</string>
+    <string name="appQuiz_AcercaDe">APPQuiz</string>
 </resources>

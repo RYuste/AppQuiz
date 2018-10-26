@@ -5,4 +5,9 @@
     <string name="title_activity_acercade">Acerca de</string>
     <string name="title_activity_listado_preguntas">Listado de Preguntas</string>
     <string name="title_activity_nueva_pregunta">Nueva Pregunta</string>
+    <string name="appQuiz_AcercaDe">APPQuiz</string>
+    <string name="creadoPor_AcercaDe">Creado por: Rafael Yuste Jiménez</string>
+    <string name="version_AcercaDe">Versión: 1.0</string>
+    <string name="eMail_AcercaDe">Correo de contacto: teka_ryj@hotmail.com</string>
+    <string name="derechos_AcercaDe">© 2018 Android Studio. Todos los derechos reservados.</string>
 </resources>
