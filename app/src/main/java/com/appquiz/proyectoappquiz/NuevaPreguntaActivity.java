@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -19,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 public class NuevaPreguntaActivity extends AppCompatActivity {
 
@@ -50,7 +50,7 @@ public class NuevaPreguntaActivity extends AppCompatActivity {
         falso3 = (EditText) findViewById(R.id.editTextRIncorrecta3);
 
         spinner = (Spinner) findViewById(R.id.spinnerCategoria);
-        String[] categorias = {"Selecciona una categoría", "Java", "Python", "R", "Go"};
+        final String[] categorias = {"Selecciona una categoría", "Java", "Python", "R", "Go"};
         spinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categorias));
 
         //Botón para guardar una nueva pregunta
@@ -86,6 +86,18 @@ public class NuevaPreguntaActivity extends AppCompatActivity {
                         }
                     }else {
                         //GUARDA LA PREGUNTA
+                        Pregunta p = new Pregunta(enunciado.getText().toString(), spinner.getSelectedItem().toString(), correcto.getText().toString(),
+                                                    falso1.getText().toString(), falso2.getText().toString(), falso3.getText().toString());
+
+                        boolean correcto = Repositorio.getRepositorio().consultaAñadirPregunta(p, myContext);
+
+                        if(correcto == true){
+                            Snackbar.make(view, "Pregunta guardada con éxito.", Snackbar.LENGTH_SHORT)
+                                    .setAction("Action", null).show();
+                        }else{
+                            Snackbar.make(view, "Error al guardar la pregunta.", Snackbar.LENGTH_SHORT)
+                                    .setAction("Action", null).show();
+                        }
                     }
                 }
             }
