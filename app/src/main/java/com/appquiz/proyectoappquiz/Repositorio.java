@@ -1,6 +1,7 @@
 package com.appquiz.proyectoappquiz;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.sql.PreparedStatement;
@@ -20,6 +21,45 @@ public class Repositorio {
     }
 
     /*-------------------------------------------------------*/
+
+    // ArrayList de Preguntas
+    private ArrayList<Pregunta> listaPreguntas = new ArrayList<Pregunta>();
+
+    /*---------------------------------------------------------*/
+
+    /**
+     * Añade todas las preguntas creadas en la Base de Datos en un ArrayList
+     *
+     * @param myContext
+     */
+    public ArrayList<Pregunta> consultaListarPreguntas(Context myContext){
+        BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
+        SQLiteDatabase db = bd.getWritableDatabase();
+
+        Cursor c = db.rawQuery(" SELECT * FROM Pregunta", null);
+
+        //Nos aseguramos de que existe al menos un registro
+        if (c.moveToFirst()) {
+
+            listaPreguntas.removeAll(listaPreguntas);
+
+            //Recorremos el cursor hasta que no haya más registros
+            do {
+                int id_pregunta= c.getInt(1);
+                String enunciado= c.getString(2);
+                String categoria = c.getString(3);
+                String correcto = c.getString(4);
+                String incorrecto_1 = c.getString(5);
+                String incorrecto_2 = c.getString(6);
+                String incorrecto_3 = c.getString(7);
+
+                Pregunta p = new Pregunta(id_pregunta, enunciado, categoria, correcto, incorrecto_1, incorrecto_2, incorrecto_3);
+                listaPreguntas.add(p);
+            } while(c.moveToNext());
+        }
+        db.close();
+        return listaPreguntas;
+    }
 
     /**
      * Añade una pregunta a la BD
@@ -41,28 +81,17 @@ public class Repositorio {
                     "'"+p.getIncorrecto_1()+"', '"+p.getIncorrecto_2()+"', '"+p.getIncorrecto_3()+"')");
 
             correcto = true;
-            db.close();
 
             MyLog.d(TAG, "Saliendo de AñadirPregunta...");
         }else {
             correcto = false;
-            db.close();
 
             MyLog.d(TAG, "Error null en AñadirPregunta...");
         }
+        db.close();
+
         MyLog.d(TAG, "Saliendo del método AñadirPregunta...");
         return correcto;
     }
 
-    /**
-     * Lista todas las preguntas
-     */
-    /*public void consultaListarPreguntas(){
-        BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
-        SQLiteDatabase db = bd.getWritableDatabase();
-
-        db.execSQL("SELECT * FROM Pregunta");
-
-        db.close();
-    }*/
 }

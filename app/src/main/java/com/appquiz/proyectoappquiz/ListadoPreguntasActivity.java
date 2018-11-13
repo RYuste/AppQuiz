@@ -1,5 +1,6 @@
 package com.appquiz.proyectoappquiz;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -8,9 +9,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import java.util.ArrayList;
+
 public class ListadoPreguntasActivity extends AppCompatActivity {
 
     private String TAG = "ListadoPreguntasActivity";
+    private Context myContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +56,12 @@ public class ListadoPreguntasActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         MyLog.d(TAG, "Iniciando onResume...");
-
         super.onResume();
+
+        // Almacenamos el contexto de la actividad para utilizar en las clases internas
+        myContext = this;
+
+        ArrayList<Pregunta> listaPreguntas = Repositorio.getRepositorio().consultaListarPreguntas(myContext);
 
         MyLog.d(TAG, "Cerrando onResume...");
     }
