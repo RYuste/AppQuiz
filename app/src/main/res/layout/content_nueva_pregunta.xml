@@ -18,14 +18,14 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:ems="10"
+        android:hint="Enunciado de la pregunta"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.509"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.169"
-        tools:text="Enunciado de la pregunta" />
+        app:layout_constraintVertical_bias="0.169" />
 
     <Button
         android:id="@+id/buttonGuardar"
@@ -51,14 +51,14 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:ems="10"
+        android:hint="Respuesta correcta"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.45"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.426"
-        tools:text="Respuesta correcta" />
+        app:layout_constraintVertical_bias="0.426" />
 
     <EditText
         android:id="@+id/editTextRIncorrecta1"
@@ -69,14 +69,14 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:ems="10"
+        android:hint="Respuesta incorrecta 1"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.442"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.565"
-        tools:text="Respuesta incorrecta 1" />
+        app:layout_constraintVertical_bias="0.565" />
 
     <EditText
         android:id="@+id/editTextRIncorrecta2"
@@ -87,14 +87,14 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:ems="10"
+        android:hint="Respuesta incorrecta 2"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.442"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.703"
-        tools:text="Respuesta incorrecta 2" />
+        app:layout_constraintVertical_bias="0.703" />
 
     <EditText
         android:id="@+id/editTextRIncorrecta3"
@@ -105,14 +105,14 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:ems="10"
+        android:hint="Respuesta incorrecta 3"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.451"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.855"
-        tools:text="Respuesta incorrecta 3" />
+        app:layout_constraintVertical_bias="0.855" />
 
     <Spinner
         android:id="@+id/spinnerCategoria"

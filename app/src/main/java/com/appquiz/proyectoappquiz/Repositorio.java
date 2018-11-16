@@ -45,13 +45,13 @@ public class Repositorio {
 
             //Recorremos el cursor hasta que no haya más registros
             do {
-                int id_pregunta= c.getInt(1);
-                String enunciado= c.getString(2);
-                String categoria = c.getString(3);
-                String correcto = c.getString(4);
-                String incorrecto_1 = c.getString(5);
-                String incorrecto_2 = c.getString(6);
-                String incorrecto_3 = c.getString(7);
+                int id_pregunta= c.getInt(c.getColumnIndex("id_pregunta"));
+                String enunciado= c.getString(c.getColumnIndex("enunciado"));
+                String categoria = c.getString(c.getColumnIndex("categoria"));
+                String correcto = c.getString(c.getColumnIndex("correcto"));
+                String incorrecto_1 = c.getString(c.getColumnIndex("incorrecto_1"));
+                String incorrecto_2 = c.getString(c.getColumnIndex("incorrecto_2"));
+                String incorrecto_3 = c.getString(c.getColumnIndex("incorrecto_3"));
 
                 Pregunta p = new Pregunta(id_pregunta, enunciado, categoria, correcto, incorrecto_1, incorrecto_2, incorrecto_3);
                 listaPreguntas.add(p);

@@ -6,8 +6,11 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -61,7 +64,29 @@ public class ListadoPreguntasActivity extends AppCompatActivity {
         // Almacenamos el contexto de la actividad para utilizar en las clases internas
         myContext = this;
 
-        ArrayList<Pregunta> listaPreguntas = Repositorio.getRepositorio().consultaListarPreguntas(myContext);
+        final ArrayList<Pregunta> listaPreguntas = Repositorio.getRepositorio().consultaListarPreguntas(myContext);
+        // Inicializa el RecyclerView
+        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_ListaPreguntas);
+        // Crea el Adaptador con los datos de la lista anterior
+        PreguntasAdapter adaptador = new PreguntasAdapter(listaPreguntas);
+
+        // Asocia el elemento de la lista con una acción al ser pulsado
+        adaptador.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Acción al pulsar el elemento
+                int position = recyclerView.getChildAdapterPosition(v);
+                Toast.makeText(ListadoPreguntasActivity.this,
+                        "Posición: " + listaPreguntas.get(position).getId() + " Enunciado: " + listaPreguntas.get(position).getEnunciado() +
+                                " Categoría: " + listaPreguntas.get(position).getCategoria(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Asocia el Adaptador al RecyclerView
+        recyclerView.setAdapter(adaptador);
+
+        // Muestra el RecyclerView en vertical
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         MyLog.d(TAG, "Cerrando onResume...");
     }
