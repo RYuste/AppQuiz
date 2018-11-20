@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -94,6 +95,8 @@ public class NuevaPreguntaActivity extends AppCompatActivity {
                         if(correcto == true){
                             Snackbar.make(view, "Pregunta guardada con éxito.", Snackbar.LENGTH_SHORT)
                                     .setAction("Action", null).show();
+
+                            esperarYCerrar();
                         }else{
                             Snackbar.make(view, "Error al guardar la pregunta.", Snackbar.LENGTH_SHORT)
                                     .setAction("Action", null).show();
@@ -104,6 +107,19 @@ public class NuevaPreguntaActivity extends AppCompatActivity {
         });
 
         MyLog.d(TAG, "Cerrando onCreate...");
+    }
+
+    /**
+     * Espera y cierra la aplicación tras los milisegundos indicados
+     */
+    public void esperarYCerrar() {
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                // acciones que se ejecutan tras los milisegundos
+                finish();
+            }
+        }, 3000);
     }
 
     @Override

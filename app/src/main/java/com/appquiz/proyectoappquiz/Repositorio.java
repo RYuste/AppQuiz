@@ -66,7 +66,7 @@ public class Repositorio {
      *
      * @param p
      * @param myContext
-     * @return
+     * @return true o false
      */
     public boolean consultaAñadirPregunta(Pregunta p, Context myContext){
         MyLog.d(TAG, "Entrando en AñadirPregunta...");
@@ -92,6 +92,20 @@ public class Repositorio {
 
         MyLog.d(TAG, "Saliendo del método AñadirPregunta...");
         return correcto;
+    }
+
+    /**
+     * Borra todas las preguntas de la BD
+     *
+     * @param myContext
+     */
+    public void consultaBorrarPregunta(Context myContext){
+        boolean correcto;
+        BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
+        SQLiteDatabase db = bd.getWritableDatabase();
+
+        db.execSQL("DELETE FROM Pregunta");
+        db.close();
     }
 
 }

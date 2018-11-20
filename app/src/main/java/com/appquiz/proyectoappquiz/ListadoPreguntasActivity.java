@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ public class ListadoPreguntasActivity extends AppCompatActivity {
 
     private String TAG = "ListadoPreguntasActivity";
     private Context myContext;
+    private TextView noCreadas;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,29 +67,37 @@ public class ListadoPreguntasActivity extends AppCompatActivity {
         myContext = this;
 
         final ArrayList<Pregunta> listaPreguntas = Repositorio.getRepositorio().consultaListarPreguntas(myContext);
+
         // Inicializa el RecyclerView
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_ListaPreguntas);
         // Crea el Adaptador con los datos de la lista anterior
         PreguntasAdapter adaptador = new PreguntasAdapter(listaPreguntas);
 
-        // Asocia el elemento de la lista con una acción al ser pulsado
-        adaptador.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Acción al pulsar el elemento
-                int position = recyclerView.getChildAdapterPosition(v);
-                Toast.makeText(ListadoPreguntasActivity.this,
-                        "Posición: " + listaPreguntas.get(position).getId() + " Enunciado: " + listaPreguntas.get(position).getEnunciado() +
-                                " Categoría: " + listaPreguntas.get(position).getCategoria(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        //Si listaPreguntas está lleno, oculta el mensaje de "No hay preguntas creadas", sino, lo muestra
+        noCreadas = (TextView) findViewById(R.id.textView_noPreguntas);
+        if(!listaPreguntas.isEmpty()){
+            noCreadas.setVisibility(View.INVISIBLE);
 
-        // Asocia el Adaptador al RecyclerView
-        recyclerView.setAdapter(adaptador);
+            // Asocia el elemento de la lista con una acción al ser pulsado
+            adaptador.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Acción al pulsar el elemento
+                    int position = recyclerView.getChildAdapterPosition(v);
+                    Toast.makeText(ListadoPreguntasActivity.this,
+                            "Posición: " + listaPreguntas.get(position).getId() + " Enunciado: " + listaPreguntas.get(position).getEnunciado() +
+                                    " Categoría: " + listaPreguntas.get(position).getCategoria(), Toast.LENGTH_SHORT).show();
+                }
+            });
 
-        // Muestra el RecyclerView en vertical
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+            // Asocia el Adaptador al RecyclerView
+            recyclerView.setAdapter(adaptador);
 
+            // Muestra el RecyclerView en vertical
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        }else{
+            noCreadas.setVisibility(View.VISIBLE);
+        }
         MyLog.d(TAG, "Cerrando onResume...");
     }
 
