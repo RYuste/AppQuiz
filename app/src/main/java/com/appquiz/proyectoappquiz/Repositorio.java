@@ -24,6 +24,8 @@ public class Repositorio {
 
     // ArrayList de Preguntas
     private ArrayList<Pregunta> listaPreguntas = new ArrayList<Pregunta>();
+    // ArrayList de categorías
+    private ArrayList<String> listaCategorias = new ArrayList<String>();
 
     /*---------------------------------------------------------*/
 
@@ -92,6 +94,33 @@ public class Repositorio {
 
         MyLog.d(TAG, "Saliendo del método AñadirPregunta...");
         return correcto;
+    }
+
+    /**
+     * Lista las categorías de todas las preguntas
+     *
+     * @param myContext
+     * @return
+     */
+    public ArrayList<String> consultaListarCategorias(Context myContext){
+        BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
+        SQLiteDatabase db = bd.getWritableDatabase();
+
+        Cursor c = db.rawQuery(" SELECT DISTINCT categoria FROM Pregunta", null);
+
+        //Nos aseguramos de que existe al menos un registro
+        if (c.moveToFirst()) {
+
+            listaCategorias.removeAll(listaCategorias);
+
+            //Recorremos el cursor hasta que no haya más registros
+            do {
+                String categoria = c.getString(c.getColumnIndex("categoria"));
+                listaCategorias.add(categoria);
+            } while(c.moveToNext());
+        }
+        db.close();
+        return listaCategorias;
     }
 
     /**
