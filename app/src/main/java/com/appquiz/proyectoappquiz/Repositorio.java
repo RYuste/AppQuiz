@@ -64,6 +64,33 @@ public class Repositorio {
     }
 
     /**
+     * Devuelve una pregunta seleccionada por id
+     *
+     * @param myContext
+     */
+    public Pregunta consultaListarPreguntaEditar(Context myContext, int id){
+        BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
+        SQLiteDatabase db = bd.getWritableDatabase();
+
+        Pregunta p = null;
+        Cursor c = db.rawQuery(" SELECT * FROM Pregunta WHERE id_pregunta = '"+id+"'", null);
+
+        //Nos aseguramos de que existe al menos un registro
+        if (c.moveToFirst()) {
+            String enunciado= c.getString(c.getColumnIndex("enunciado"));
+            String categoria = c.getString(c.getColumnIndex("categoria"));
+            String correcto = c.getString(c.getColumnIndex("correcto"));
+            String incorrecto_1 = c.getString(c.getColumnIndex("incorrecto_1"));
+            String incorrecto_2 = c.getString(c.getColumnIndex("incorrecto_2"));
+            String incorrecto_3 = c.getString(c.getColumnIndex("incorrecto_3"));
+
+            p = new Pregunta(enunciado, categoria, correcto, incorrecto_1, incorrecto_2, incorrecto_3);
+        }
+        db.close();
+        return p;
+    }
+
+    /**
      * Añade una pregunta a la BD
      *
      * @param p
@@ -93,6 +120,35 @@ public class Repositorio {
         db.close();
 
         MyLog.d(TAG, "Saliendo del método AñadirPregunta...");
+        return correcto;
+    }
+
+    /**
+     * Actualiza una pregunta
+     */
+    public boolean consultaActualizarPregunta(Context myContext, Pregunta p, int id){
+        MyLog.d(TAG, "Entrando en ActualizarPregunta...");
+
+        boolean correcto;
+        BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
+        SQLiteDatabase db = bd.getWritableDatabase();
+
+        if(db != null){
+            db.execSQL("UPDATE Pregunta SET enunciado = '"+p.getEnunciado()+"', categoria = '"+p.getCategoria()+"', " +
+                    "correcto = '"+p.getCorrecto()+"', incorrecto_1 = '"+p.getIncorrecto_1()+"', incorrecto_2 = '"+p.getIncorrecto_2()+"'" +
+                    ", incorrecto_3 = '"+p.getIncorrecto_3()+"' WHERE id_pregunta = '"+id+"'");
+
+            correcto = true;
+
+            MyLog.d(TAG, "Saliendo de ActualizarPregunta...");
+        }else {
+            correcto = false;
+
+            MyLog.d(TAG, "Error null en ActualizarPregunta...");
+        }
+        db.close();
+
+        MyLog.d(TAG, "Saliendo del método ActualizarPregunta...");
         return correcto;
     }
 
@@ -128,8 +184,7 @@ public class Repositorio {
      *
      * @param myContext
      */
-    public void consultaBorrarPregunta(Context myContext){
-        boolean correcto;
+    public void consultaBorrarPreguntas(Context myContext){
         BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
         SQLiteDatabase db = bd.getWritableDatabase();
 

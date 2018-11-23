@@ -4,14 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -33,7 +31,7 @@ public class ListadoPreguntasActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(ListadoPreguntasActivity.this, NuevaPreguntaActivity.class));
+                startActivity(new Intent(ListadoPreguntasActivity.this, NuevaEditaPreguntaActivity.class));
             }
         });
 
@@ -83,10 +81,22 @@ public class ListadoPreguntasActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     // Acción al pulsar el elemento
-                    int position = recyclerView.getChildAdapterPosition(v);
+                    /*int position = recyclerView.getChildAdapterPosition(v);
                     Toast.makeText(ListadoPreguntasActivity.this,
                             "Posición: " + listaPreguntas.get(position).getId() + " Enunciado: " + listaPreguntas.get(position).getEnunciado() +
-                                    " Categoría: " + listaPreguntas.get(position).getCategoria(), Toast.LENGTH_SHORT).show();
+                                    " Categoría: " + listaPreguntas.get(position).getCategoria(), Toast.LENGTH_SHORT).show();*/
+
+                    int position = recyclerView.getChildAdapterPosition(v);
+                    Intent intent = new Intent(ListadoPreguntasActivity.this, NuevaEditaPreguntaActivity.class);
+
+                    // Creamos la información a pasar entre actividades
+                    Bundle b = new Bundle();
+                    b.putInt("ID", listaPreguntas.get(position).getId());
+
+                    // Añadimos la información al intent
+                    intent.putExtras(b);
+                    // Iniciamos la actividad
+                    startActivity(intent);
                 }
             });
 

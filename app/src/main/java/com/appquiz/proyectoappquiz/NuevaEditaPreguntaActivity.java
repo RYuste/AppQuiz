@@ -1,6 +1,7 @@
 package com.appquiz.proyectoappquiz;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
@@ -22,13 +23,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class NuevaPreguntaActivity extends AppCompatActivity {
+public class NuevaEditaPreguntaActivity extends AppCompatActivity {
 
-    private String TAG = "NuevaPreguntaActivity";
+    private String TAG = "NuevaEditaPreguntaActivity";
     private EditText enunciado, correcto, falso1, falso2, falso3;
     private Spinner spinner;
     private ArrayAdapter<String> adapter;
@@ -50,6 +50,9 @@ public class NuevaPreguntaActivity extends AppCompatActivity {
         // Recuperamos el Layout donde mostrar el Snackbar con las notificaciones
         constraintLayoutMainActivity = findViewById(R.id.layout);
 
+        //Recuperamos la información pasada en el intent
+        final Bundle bundle = this.getIntent().getExtras();
+
         enunciado = (EditText) findViewById(R.id.editTextEnunciado);
         correcto = (EditText) findViewById(R.id.editTextRCorrecta);
         falso1 = (EditText) findViewById(R.id.editTextRIncorrecta1);
@@ -57,21 +60,31 @@ public class NuevaPreguntaActivity extends AppCompatActivity {
         falso3 = (EditText) findViewById(R.id.editTextRIncorrecta3);
 
         // Definición de la lista de opciones del spinner almacenados en la BD
-        ArrayList<String> items = new ArrayList<String>();
-        items = Repositorio.getRepositorio().consultaListarCategorias(myContext);
-
+        ArrayList<String> items = Repositorio.getRepositorio().consultaListarCategorias(myContext);
         // Definición del Adaptador que contiene la lista de opciones
         adapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, items);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-
         // Definición del Spinner
         spinner = (Spinner) findViewById(R.id.spinnerCategoria);
         spinner.setAdapter(adapter);
+
+        // Si el bundle NO es null, rellena los campos de EditText de la pregunta a editar
+        if(bundle != null){
+            getSupportActionBar().setTitle("Editar Pregunta");
+            Pregunta preguntaAEditar = Repositorio.getRepositorio().consultaListarPreguntaEditar(myContext, bundle.getInt("ID"));
+
+            enunciado.setText(preguntaAEditar.getEnunciado());
+            correcto.setText(preguntaAEditar.getCorrecto());
+            falso1.setText(preguntaAEditar.getIncorrecto_1());
+            falso2.setText(preguntaAEditar.getIncorrecto_2());
+            falso3.setText(preguntaAEditar.getIncorrecto_3());
+        }
 
         //Botón para guardar una nueva pregunta
         Button botonGuardar = (Button) findViewById(R.id.buttonGuardar);
         botonGuardar.setOnClickListener(new View.OnClickListener() {
 
+            @SuppressLint("LongLogTag")
             @Override
             public void onClick(View view) {
                 //Oculta el teclado al pulsar el botón Guardar
@@ -80,7 +93,7 @@ public class NuevaPreguntaActivity extends AppCompatActivity {
 
                 //Permisos de escritura
                 int WriteExternalStoragePermission = ContextCompat.checkSelfPermission(myContext, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                Log.d("NuevaPreguntaActivity", "WRITE_EXTERNAL_STORAGE Permission: " + WriteExternalStoragePermission);
+                Log.d("NuevaEditaPreguntaActivity", "WRITE_EXTERNAL_STORAGE Permission: " + WriteExternalStoragePermission);
 
                 //Si alguno de los editText está vacío o no se ha seleccionado ninguna categoría, salta el snackbar
                 if(enunciado.getText().toString().isEmpty() || correcto.getText().toString().isEmpty() || falso1.getText().toString().isEmpty() ||
@@ -92,7 +105,7 @@ public class NuevaPreguntaActivity extends AppCompatActivity {
                     if (WriteExternalStoragePermission != PackageManager.PERMISSION_GRANTED){
                         // Permiso denegado
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                            ActivityCompat.requestPermissions(NuevaPreguntaActivity.this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, CODE_WRITE_EXTERNAL_STORAGE_PERMISSION);
+                            ActivityCompat.requestPermissions(NuevaEditaPreguntaActivity.this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, CODE_WRITE_EXTERNAL_STORAGE_PERMISSION);
                             // Una vez que se pide aceptar o rechazar el permiso se ejecuta el método "onRequestPermissionsResult" para manejar la respuesta
                             // Si el usuario marca "No preguntar más" no se volverá a mostrar este diálogo
                         } else {
@@ -104,16 +117,31 @@ public class NuevaPreguntaActivity extends AppCompatActivity {
                         Pregunta p = new Pregunta(enunciado.getText().toString(), spinner.getSelectedItem().toString(), correcto.getText().toString(),
                                                     falso1.getText().toString(), falso2.getText().toString(), falso3.getText().toString());
 
-                        boolean correcto = Repositorio.getRepositorio().consultaAñadirPregunta(p, myContext);
+                        // Si el bundle NO en null, Actualiza la pregunta, sino, crea una nueva
+                        if(bundle != null){
+                            boolean correcto = Repositorio.getRepositorio().consultaActualizarPregunta(myContext, p, bundle.getInt("ID"));
 
-                        if(correcto == true){
-                            Snackbar.make(view, "Pregunta guardada con éxito.", Snackbar.LENGTH_SHORT)
-                                    .setAction("Action", null).show();
+                            if(correcto == true){
+                                Snackbar.make(view, "Pregunta actualizada con éxito.", Snackbar.LENGTH_SHORT)
+                                        .setAction("Action", null).show();
 
-                            esperarYCerrar();
+                                esperarYCerrar();
+                            }else{
+                                Snackbar.make(view, "Error al actualizar la pregunta.", Snackbar.LENGTH_SHORT)
+                                        .setAction("Action", null).show();
+                            }
                         }else{
-                            Snackbar.make(view, "Error al guardar la pregunta.", Snackbar.LENGTH_SHORT)
-                                    .setAction("Action", null).show();
+                            boolean correcto = Repositorio.getRepositorio().consultaAñadirPregunta(p, myContext);
+
+                            if(correcto == true){
+                                Snackbar.make(view, "Pregunta guardada con éxito.", Snackbar.LENGTH_SHORT)
+                                        .setAction("Action", null).show();
+
+                                esperarYCerrar();
+                            }else{
+                                Snackbar.make(view, "Error al guardar la pregunta.", Snackbar.LENGTH_SHORT)
+                                        .setAction("Action", null).show();
+                            }
                         }
                     }
                 }
@@ -124,7 +152,7 @@ public class NuevaPreguntaActivity extends AppCompatActivity {
         Button button = (Button) findViewById(R.id.buttonAddItem);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(final View view) {
                 // Recuperación de la vista del AlertDialog a partir del layout de la Actividad
                 LayoutInflater layoutActivity = LayoutInflater.from(myContext);
                 View viewAlertDialog = layoutActivity.inflate(R.layout.alert_dialog, null);
@@ -145,8 +173,19 @@ public class NuevaPreguntaActivity extends AppCompatActivity {
                         .setPositiveButton("Aceptar",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialogBox, int id) {
-                                        adapter.add(dialogInput.getText().toString());
-                                        spinner.setSelection(adapter.getPosition(dialogInput.getText().toString()));
+                                        boolean correcto = true;
+                                        // Si coindice la nueva categoria con una ya existente, no la guarda en el spinner
+                                        for (int i = 0; i < spinner.getCount(); i++) {
+                                            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(dialogInput.getText().toString())) {
+                                                Snackbar.make(view, "Error al guardar la categoría.", Snackbar.LENGTH_SHORT)
+                                                        .setAction("Action", null).show();
+                                                correcto = false;
+                                            }
+                                        }
+                                        if(correcto == true){
+                                            adapter.add(dialogInput.getText().toString());
+                                            spinner.setSelection(adapter.getPosition(dialogInput.getText().toString()));
+                                        }
                                     }
                                 })
                         // Botón Cancelar

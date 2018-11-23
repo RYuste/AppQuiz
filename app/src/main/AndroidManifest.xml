@@ -43,7 +43,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:screenOrientation="portrait"
-            android:name=".NuevaPreguntaActivity"
+            android:name=".NuevaEditaPreguntaActivity"
             android:label="@string/title_activity_nueva_pregunta"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
