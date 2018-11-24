@@ -10,4 +10,24 @@
     <string name="version_AcercaDe">Versión: 1.0</string>
     <string name="eMail_AcercaDe">Correo de contacto: teka_ryj@hotmail.com</string>
     <string name="derechos_AcercaDe">© 2018 Android Studio. Todos los derechos reservados.</string>
+    <string name="noPreguntasCreadas">No hay preguntas creadas.</string>
+    <string name="enunciado">Enunciado de la pregunta</string>
+    <string name="guardar">Guardar</string>
+    <string name="correcta">Respuesta correcta</string>
+    <string name="incorrecta_1">Respuesta incorrecta 1</string>
+    <string name="incorrecta_2">Respuesta incorrecta 2</string>
+    <string name="incorrecta_3">Respuesta incorrecta 3</string>
+    <string name="categoria">Categoría: </string>
+    <string name="nuevaCategoria">Nueva categoría</string>
+    <string name="error_guardarCategoria">Error al guardar la categoría.</string>
+    <string name="perEscAcep">Permisos de escritura aceptados.</string>
+    <string name="perEscDene">Permisos de escritura denegados.</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="title_activity_editarPregunta">Editar Pregunta</string>
+    <string name="rellenarCamposGuardar">Rellena todos los campos para Guardar.</string>
+    <string name="actualizarPregunta_exito">Pregunta actualizada con éxito.</string>
+    <string name="actualizarPregunta_error">Error al actualizar la pregunta.</string>
+    <string name="guardarPregunta_exito">Pregunta guardada con éxito.</string>
+    <string name="guardarPregunta_error">Error al guardar la pregunta.</string>
 </resources>

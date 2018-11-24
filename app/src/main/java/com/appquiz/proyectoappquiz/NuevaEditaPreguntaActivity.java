@@ -70,9 +70,10 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
 
         // Si el bundle NO es null, rellena los campos de EditText de la pregunta a editar
         if(bundle != null){
-            getSupportActionBar().setTitle("Editar Pregunta");
-            Pregunta preguntaAEditar = Repositorio.getRepositorio().consultaListarPreguntaEditar(myContext, bundle.getInt("ID"));
+            // Cambia título de la actividad
+            getSupportActionBar().setTitle(R.string.title_activity_editarPregunta);
 
+            Pregunta preguntaAEditar = Repositorio.getRepositorio().consultaListarPreguntaEditar(myContext, bundle.getInt("ID"));
             enunciado.setText(preguntaAEditar.getEnunciado());
             correcto.setText(preguntaAEditar.getCorrecto());
             falso1.setText(preguntaAEditar.getIncorrecto_1());
@@ -81,7 +82,7 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
         }
 
         //Botón para guardar una nueva pregunta
-        Button botonGuardar = (Button) findViewById(R.id.buttonGuardar);
+        final Button botonGuardar = (Button) findViewById(R.id.buttonGuardar);
         botonGuardar.setOnClickListener(new View.OnClickListener() {
 
             @SuppressLint("LongLogTag")
@@ -99,7 +100,7 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
                 if(enunciado.getText().toString().isEmpty() || correcto.getText().toString().isEmpty() || falso1.getText().toString().isEmpty() ||
                         falso2.getText().toString().isEmpty() || falso3.getText().toString().isEmpty() ||
                         spinner.getSelectedItem().toString().isEmpty()){
-                    Snackbar.make(view, "Rellena todos los campos para Guardar.", Snackbar.LENGTH_SHORT)
+                    Snackbar.make(view, R.string.rellenarCamposGuardar, Snackbar.LENGTH_SHORT)
                             .setAction("Action", null).show();
                 }else{
                     if (WriteExternalStoragePermission != PackageManager.PERMISSION_GRANTED){
@@ -109,7 +110,7 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
                             // Una vez que se pide aceptar o rechazar el permiso se ejecuta el método "onRequestPermissionsResult" para manejar la respuesta
                             // Si el usuario marca "No preguntar más" no se volverá a mostrar este diálogo
                         } else {
-                            Snackbar.make(view, "Permisos de escritura denegados.", Snackbar.LENGTH_SHORT)
+                            Snackbar.make(view, R.string.perEscDene, Snackbar.LENGTH_SHORT)
                                     .setAction("Action", null).show();
                         }
                     }else {
@@ -122,24 +123,24 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
                             boolean correcto = Repositorio.getRepositorio().consultaActualizarPregunta(myContext, p, bundle.getInt("ID"));
 
                             if(correcto == true){
-                                Snackbar.make(view, "Pregunta actualizada con éxito.", Snackbar.LENGTH_SHORT)
+                                Snackbar.make(view, R.string.actualizarPregunta_exito, Snackbar.LENGTH_SHORT)
                                         .setAction("Action", null).show();
 
                                 esperarYCerrar();
                             }else{
-                                Snackbar.make(view, "Error al actualizar la pregunta.", Snackbar.LENGTH_SHORT)
+                                Snackbar.make(view, R.string.actualizarPregunta_error, Snackbar.LENGTH_SHORT)
                                         .setAction("Action", null).show();
                             }
                         }else{
                             boolean correcto = Repositorio.getRepositorio().consultaAñadirPregunta(p, myContext);
 
                             if(correcto == true){
-                                Snackbar.make(view, "Pregunta guardada con éxito.", Snackbar.LENGTH_SHORT)
+                                Snackbar.make(view, R.string.guardarPregunta_exito, Snackbar.LENGTH_SHORT)
                                         .setAction("Action", null).show();
 
                                 esperarYCerrar();
                             }else{
-                                Snackbar.make(view, "Error al guardar la pregunta.", Snackbar.LENGTH_SHORT)
+                                Snackbar.make(view, R.string.guardarPregunta_error, Snackbar.LENGTH_SHORT)
                                         .setAction("Action", null).show();
                             }
                         }
@@ -170,14 +171,20 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
                 alertDialog
                         .setCancelable(false)
                         // Botón Añadir
-                        .setPositiveButton("Aceptar",
+                        .setPositiveButton(R.string.aceptar,
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialogBox, int id) {
                                         boolean correcto = true;
+                                        // Si se intenta Aceptar con el dialog vacío, salta un error
+                                        if(dialogInput.getText().toString().isEmpty()){
+                                            Snackbar.make(view, R.string.error_guardarCategoria, Snackbar.LENGTH_SHORT)
+                                                    .setAction("Action", null).show();
+                                            correcto = false;
+                                        }
                                         // Si coindice la nueva categoria con una ya existente, no la guarda en el spinner
                                         for (int i = 0; i < spinner.getCount(); i++) {
                                             if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(dialogInput.getText().toString())) {
-                                                Snackbar.make(view, "Error al guardar la categoría.", Snackbar.LENGTH_SHORT)
+                                                Snackbar.make(view, R.string.error_guardarCategoria, Snackbar.LENGTH_SHORT)
                                                         .setAction("Action", null).show();
                                                 correcto = false;
                                             }
@@ -189,7 +196,7 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
                                     }
                                 })
                         // Botón Cancelar
-                        .setNegativeButton("Cancelar",
+                        .setNegativeButton(R.string.cancelar,
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialogBox, int id) {
                                         dialogBox.cancel();
@@ -222,11 +229,11 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
             case CODE_WRITE_EXTERNAL_STORAGE_PERMISSION:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // Permiso aceptado
-                    Snackbar.make(constraintLayoutMainActivity, "Permisos de escritura aceptados.", Snackbar.LENGTH_SHORT)
+                    Snackbar.make(constraintLayoutMainActivity, R.string.perEscAcep, Snackbar.LENGTH_SHORT)
                             .setAction("Action", null).show();
                 } else {
                     // Permiso rechazado
-                    Snackbar.make(constraintLayoutMainActivity, "Permisos de escritura denegados.", Snackbar.LENGTH_SHORT)
+                    Snackbar.make(constraintLayoutMainActivity, R.string.perEscDene, Snackbar.LENGTH_SHORT)
                             .setAction("Action", null).show();
                 }
                 break;

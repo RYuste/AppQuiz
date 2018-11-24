@@ -17,7 +17,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:gravity="center_vertical|center_horizontal"
-        android:text="No hay preguntas creadas."
+        android:text="@string/noPreguntasCreadas"
         android:textColor="#000000"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
