@@ -31,4 +31,5 @@
     <string name="actualizarPregunta_error">" Error updating the question."</string>
     <string name="guardarPregunta_exito">Question saved successfully.</string>
     <string name="guardarPregunta_error">" Error saving the question."</string>
+    <string name="borrarListado">Delete List</string>
 </resources>

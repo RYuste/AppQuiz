@@ -10,7 +10,7 @@
         app:showAsAction="never" />
 
     <item android:id="@+id/action_questions"
-        android:title="Listado de Preguntas"
+        android:title="@string/title_activity_listado_preguntas"
         android:orderInCategory="100"
         app:showAsAction="never" />
 </menu>

@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="0"
-            android:text="@string/categoria"
+            android:text="Categoría: "
             android:textColor="#00BCD4"
             android:textSize="15sp" />
 

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
 
 public class Repositorio {
@@ -30,9 +29,10 @@ public class Repositorio {
     /*---------------------------------------------------------*/
 
     /**
-     * Añade todas las preguntas creadas en la Base de Datos en un ArrayList
+     * Añade todas las preguntas creadas en la Base de Datos en un ArrayList y lo devuelve
      *
      * @param myContext
+     * @return listaPreguntas
      */
     public ArrayList<Pregunta> consultaListarPreguntas(Context myContext){
         BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
@@ -67,6 +67,7 @@ public class Repositorio {
      * Devuelve una pregunta seleccionada por id
      *
      * @param myContext
+     * @return p
      */
     public Pregunta consultaListarPreguntaEditar(Context myContext, int id){
         BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
@@ -123,8 +124,14 @@ public class Repositorio {
         return correcto;
     }
 
+
     /**
      * Actualiza una pregunta
+     *
+     * @param myContext
+     * @param p
+     * @param id
+     * @return true o false
      */
     public boolean consultaActualizarPregunta(Context myContext, Pregunta p, int id){
         MyLog.d(TAG, "Entrando en ActualizarPregunta...");
@@ -156,13 +163,13 @@ public class Repositorio {
      * Lista las categorías de todas las preguntas
      *
      * @param myContext
-     * @return
+     * @return listaCategorias
      */
     public ArrayList<String> consultaListarCategorias(Context myContext){
         BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
         SQLiteDatabase db = bd.getWritableDatabase();
 
-        Cursor c = db.rawQuery(" SELECT DISTINCT categoria FROM Pregunta", null);
+        Cursor c = db.rawQuery(" SELECT DISTINCT categoria FROM Pregunta ORDER BY categoria ", null);
 
         //Nos aseguramos de que existe al menos un registro
         if (c.moveToFirst()) {

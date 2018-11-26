@@ -99,7 +99,7 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
                 //Si alguno de los editText está vacío o no se ha seleccionado ninguna categoría, salta el snackbar
                 if(enunciado.getText().toString().isEmpty() || correcto.getText().toString().isEmpty() || falso1.getText().toString().isEmpty() ||
                         falso2.getText().toString().isEmpty() || falso3.getText().toString().isEmpty() ||
-                        spinner.getSelectedItem().toString().isEmpty()){
+                        spinner.getAdapter().isEmpty()){
                     Snackbar.make(view, R.string.rellenarCamposGuardar, Snackbar.LENGTH_SHORT)
                             .setAction("Action", null).show();
                 }else{

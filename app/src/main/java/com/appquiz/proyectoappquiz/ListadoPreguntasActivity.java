@@ -4,10 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -36,6 +40,25 @@ public class ListadoPreguntasActivity extends AppCompatActivity {
         });
 
         MyLog.d(TAG, "Cerrando onCreate...");
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_listadopreguntas, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_delete:
+                Log.i("ActionBar", "Borrar Listado de Preguntas");
+                Repositorio.getRepositorio().consultaBorrarPreguntas(myContext);
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -81,12 +104,11 @@ public class ListadoPreguntasActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     // Acción al pulsar el elemento
-                    /*int position = recyclerView.getChildAdapterPosition(v);
-                    Toast.makeText(ListadoPreguntasActivity.this,
+                    int position = recyclerView.getChildAdapterPosition(v);
+                    /*Toast.makeText(ListadoPreguntasActivity.this,
                             "Posición: " + listaPreguntas.get(position).getId() + " Enunciado: " + listaPreguntas.get(position).getEnunciado() +
                                     " Categoría: " + listaPreguntas.get(position).getCategoria(), Toast.LENGTH_SHORT).show();*/
 
-                    int position = recyclerView.getChildAdapterPosition(v);
                     Intent intent = new Intent(ListadoPreguntasActivity.this, NuevaEditaPreguntaActivity.class);
 
                     // Creamos la información a pasar entre actividades
