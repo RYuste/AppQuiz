@@ -32,4 +32,6 @@
     <string name="guardarPregunta_exito">Question saved successfully.</string>
     <string name="guardarPregunta_error">" Error saving the question."</string>
     <string name="borrarListado">Delete List</string>
+    <string name="eliminarPregunta_exito">" Question deleted successfully."</string>
+    <string name="eliminarPregunta_error">" Error deleting the question."</string>
 </resources>

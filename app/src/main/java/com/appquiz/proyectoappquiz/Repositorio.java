@@ -35,6 +35,8 @@ public class Repositorio {
      * @return listaPreguntas
      */
     public ArrayList<Pregunta> consultaListarPreguntas(Context myContext){
+        MyLog.d(TAG, "Entrando en ListarPreguntas...");
+
         BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
         SQLiteDatabase db = bd.getWritableDatabase();
 
@@ -60,6 +62,8 @@ public class Repositorio {
             } while(c.moveToNext());
         }
         db.close();
+        MyLog.d(TAG, "Saliendo del método ListarPreguntas...");
+
         return listaPreguntas;
     }
 
@@ -70,6 +74,8 @@ public class Repositorio {
      * @return p
      */
     public Pregunta consultaListarPreguntaEditar(Context myContext, int id){
+        MyLog.d(TAG, "Entrando en ListarPreguntaEditar...");
+
         BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
         SQLiteDatabase db = bd.getWritableDatabase();
 
@@ -88,6 +94,8 @@ public class Repositorio {
             p = new Pregunta(enunciado, categoria, correcto, incorrecto_1, incorrecto_2, incorrecto_3);
         }
         db.close();
+        MyLog.d(TAG, "Saliendo del método ListarPreguntaEditar...");
+
         return p;
     }
 
@@ -166,6 +174,8 @@ public class Repositorio {
      * @return listaCategorias
      */
     public ArrayList<String> consultaListarCategorias(Context myContext){
+        MyLog.d(TAG, "Entrando en ListarCategorias...");
+
         BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
         SQLiteDatabase db = bd.getWritableDatabase();
 
@@ -183,7 +193,40 @@ public class Repositorio {
             } while(c.moveToNext());
         }
         db.close();
+        MyLog.d(TAG, "Saliendo del método ListarCategorias...");
+
         return listaCategorias;
+    }
+
+    /**
+     * Elimina una pregunta por id
+     *
+     * @param myContext
+     * @param id
+     * @return true o false
+     */
+    public boolean consultaEliminarPregunta(Context myContext, int id){
+        MyLog.d(TAG, "Entrando en EliminarPregunta...");
+
+        boolean correcto;
+        BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
+        SQLiteDatabase db = bd.getWritableDatabase();
+
+        if(db != null){
+            db.execSQL("DELETE FROM Pregunta WHERE id_pregunta = '"+id+"'");
+
+            correcto = true;
+
+            MyLog.d(TAG, "Saliendo de EliminarPregunta...");
+        }else {
+            correcto = false;
+
+            MyLog.d(TAG, "Error null en EliminarPregunta...");
+        }
+        db.close();
+
+        MyLog.d(TAG, "Saliendo del método EliminarPregunta...");
+        return correcto;
     }
 
     /**
@@ -192,11 +235,15 @@ public class Repositorio {
      * @param myContext
      */
     public void consultaBorrarPreguntas(Context myContext){
+        MyLog.d(TAG, "Entrando en BorrarPregunta...");
+
         BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
         SQLiteDatabase db = bd.getWritableDatabase();
 
         db.execSQL("DELETE FROM Pregunta");
         db.close();
+
+        MyLog.d(TAG, "Saliendo del método BorrarPregunta...");
     }
 
 }

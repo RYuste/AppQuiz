@@ -12,6 +12,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -44,6 +45,7 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
         setContentView(R.layout.activity_nueva_pregunta);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        setupActionBar();
 
         // Almacenamos el contexto de la actividad para utilizar en las clases internas
         myContext = this;
@@ -118,7 +120,7 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
                         Pregunta p = new Pregunta(enunciado.getText().toString(), spinner.getSelectedItem().toString(), correcto.getText().toString(),
                                                     falso1.getText().toString(), falso2.getText().toString(), falso3.getText().toString());
 
-                        // Si el bundle NO en null, Actualiza la pregunta, sino, crea una nueva
+                        // Si el bundle NO en null, actualiza la pregunta, sino, crea una nueva
                         if(bundle != null){
                             boolean correcto = Repositorio.getRepositorio().consultaActualizarPregunta(myContext, p, bundle.getInt("ID"));
 
@@ -239,6 +241,16 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
                 break;
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    /**
+     * Crea una flecha para volver atrás
+     */
+    private void setupActionBar(){
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null){
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
 

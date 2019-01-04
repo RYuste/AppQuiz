@@ -31,4 +31,6 @@
     <string name="guardarPregunta_exito">Pregunta guardada con éxito.</string>
     <string name="guardarPregunta_error">Error al guardar la pregunta.</string>
     <string name="borrarListado">Borrar Listado</string>
+    <string name="eliminarPregunta_exito">Pregunta eliminada con éxito.</string>
+    <string name="eliminarPregunta_error">Error al eliminar la pregunta.</string>
 </resources>
