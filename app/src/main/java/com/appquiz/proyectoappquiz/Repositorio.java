@@ -29,6 +29,37 @@ public class Repositorio {
     /*---------------------------------------------------------*/
 
     /**
+     * Comprueba si la BD está vacía
+     *
+     * @param myContext
+     * @return true o false
+     */
+    public boolean checkEmpty(Context myContext){
+        int count = 0;
+        BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
+        SQLiteDatabase db = bd.getWritableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT count(*) FROM Pregunta", null);
+
+        try {
+            if(cursor != null)
+                if(cursor.getCount() > 0){
+                    cursor.moveToFirst();
+                    count = cursor.getInt(0);
+                }
+        }finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+
+        if(count>0)
+            return false;
+        else
+            return true;
+    }
+
+    /**
      * Añade todas las preguntas creadas en la Base de Datos en un ArrayList y lo devuelve
      *
      * @param myContext
@@ -44,7 +75,6 @@ public class Repositorio {
 
         //Nos aseguramos de que existe al menos un registro
         if (c.moveToFirst()) {
-
             listaPreguntas.removeAll(listaPreguntas);
 
             //Recorremos el cursor hasta que no haya más registros
@@ -183,7 +213,6 @@ public class Repositorio {
 
         //Nos aseguramos de que existe al menos un registro
         if (c.moveToFirst()) {
-
             listaCategorias.removeAll(listaCategorias);
 
             //Recorremos el cursor hasta que no haya más registros
@@ -234,8 +263,8 @@ public class Repositorio {
      *
      * @param myContext
      */
-    public void consultaBorrarPreguntas(Context myContext){
-        MyLog.d(TAG, "Entrando en BorrarPregunta...");
+    public void consultaBorrarListadoPreguntas(Context myContext){
+        MyLog.d(TAG, "Entrando en BorrarListadoPreguntas...");
 
         BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
         SQLiteDatabase db = bd.getWritableDatabase();
@@ -243,7 +272,62 @@ public class Repositorio {
         db.execSQL("DELETE FROM Pregunta");
         db.close();
 
-        MyLog.d(TAG, "Saliendo del método BorrarPregunta...");
+        MyLog.d(TAG, "Saliendo del método BorrarListadoPreguntas...");
     }
 
+    /**
+     * Devuelve el número de preguntas que hay creadas en la BD
+     *
+     * @param myContext
+     * @return
+     */
+    public int consultaContarPreguntas(Context myContext){
+        MyLog.d(TAG, "Entrando en consultaContarPreguntas...");
+        int contador = 0;
+
+        BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
+        SQLiteDatabase db = bd.getWritableDatabase();
+
+        Cursor c = db.rawQuery(" SELECT * FROM Pregunta", null);
+
+        //Nos aseguramos de que existe al menos un registro
+        if (c.moveToFirst()) {
+            //Recorremos el cursor hasta que no haya más registros
+            do {
+                contador++;
+            } while(c.moveToNext());
+        }
+        db.close();
+
+        MyLog.d(TAG, "Entrando en consultaContarPreguntas...");
+        return contador;
+    }
+
+    /**
+     * Devuelve el número de categorías que hay creadas en la BD
+     *
+     * @param myContext
+     * @return
+     */
+    public int consultaContarCategorias(Context myContext){
+        MyLog.d(TAG, "Entrando en consultaContarCategorias...");
+        int contador = 0;
+
+        BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
+        SQLiteDatabase db = bd.getWritableDatabase();
+
+        Cursor c = db.rawQuery(" SELECT DISTINCT categoria FROM Pregunta ORDER BY categoria ", null);
+
+        //Nos aseguramos de que existe al menos un registro
+        if (c.moveToFirst()) {
+            //Recorremos el cursor hasta que no haya más registros
+            do {
+                contador++;
+            } while(c.moveToNext());
+        }
+        db.close();
+
+        MyLog.d(TAG, "Entrando en consultaContarCategorias...");
+        return contador;
+    }
 }

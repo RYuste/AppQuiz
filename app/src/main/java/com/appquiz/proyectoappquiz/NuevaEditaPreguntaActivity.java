@@ -70,10 +70,19 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
         spinner = (Spinner) findViewById(R.id.spinnerCategoria);
         spinner.setAdapter(adapter);
 
+        //Botón para guardar una nueva pregunta
+        final Button botonGuardar = (Button) findViewById(R.id.buttonGuardar);
+        // Botón para eliminar pregunta
+        final Button botonEliminar = (Button) findViewById(R.id.buttonEliminar);
+        final Button botonEliminar2 = (Button) findViewById(R.id.buttonEliminar2);
+
         // Si el bundle NO es null, rellena los campos de EditText de la pregunta a editar
         if(bundle != null){
             // Cambia título de la actividad
             getSupportActionBar().setTitle(R.string.title_activity_editarPregunta);
+            // Habilita el botón Eliminar
+            botonEliminar.setEnabled(true);
+            botonEliminar2.setVisibility(View.INVISIBLE);
 
             Pregunta preguntaAEditar = Repositorio.getRepositorio().consultaListarPreguntaEditar(myContext, bundle.getInt("ID"));
             enunciado.setText(preguntaAEditar.getEnunciado());
@@ -81,10 +90,14 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
             falso1.setText(preguntaAEditar.getIncorrecto_1());
             falso2.setText(preguntaAEditar.getIncorrecto_2());
             falso3.setText(preguntaAEditar.getIncorrecto_3());
+        }else{
+            // Inhabilita el botón Eliminar
+            botonEliminar.setEnabled(false);
+            //botonEliminar.setBackgroundColor(getResources().getColor(R.color.colorEnabled);
+            botonEliminar.setVisibility(View.INVISIBLE);
         }
 
-        //Botón para guardar una nueva pregunta
-        final Button botonGuardar = (Button) findViewById(R.id.buttonGuardar);
+        // Acción al pulsar el botón GUARDAR
         botonGuardar.setOnClickListener(new View.OnClickListener() {
 
             @SuppressLint("LongLogTag")
@@ -148,6 +161,41 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
                         }
                     }
                 }
+            }
+        });
+
+        botonEliminar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                //Oculta el teclado al pulsar el botón Guardar
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(enunciado.getWindowToken(), 0);
+
+                // Elimina la pregunta
+                AlertDialog.Builder builder = new AlertDialog.Builder(NuevaEditaPreguntaActivity.this);
+                builder.setMessage("¿Deseas eliminar esta pregunta?"); //set message
+
+                builder.setPositiveButton("ELIMINAR", new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        boolean correcto = Repositorio.getRepositorio().consultaEliminarPregunta(myContext, bundle.getInt("ID"));
+
+                        if(correcto == true){
+                            Snackbar.make(view, R.string.eliminarPregunta_exito, Snackbar.LENGTH_SHORT)
+                                    .setAction("Action", null).show();
+
+                            esperarYCerrar();
+                        }else{
+                            Snackbar.make(view, R.string.eliminarPregunta_error, Snackbar.LENGTH_SHORT)
+                                    .setAction("Action", null).show();
+                        }
+                    }
+                }).setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        return;
+                    }
+                }).show(); //show alert dialog
             }
         });
 

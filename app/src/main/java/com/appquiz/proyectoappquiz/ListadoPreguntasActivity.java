@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -71,9 +72,22 @@ public class ListadoPreguntasActivity extends AppCompatActivity {
             case R.id.action_delete:
                 Log.i("ActionBar", "Borrar Listado de Preguntas");
 
-                Repositorio.getRepositorio().consultaBorrarPreguntas(myContext);
-                finish();
-                return true;
+                // Elimina la lista de preguntas
+                AlertDialog.Builder builder = new AlertDialog.Builder(ListadoPreguntasActivity.this);
+                builder.setMessage("¿Deseas eliminar el listado de preguntas?"); //set message
+
+                builder.setPositiveButton("ELIMINAR", new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Repositorio.getRepositorio().consultaBorrarListadoPreguntas(myContext);
+                        finish();
+                    }
+                }).setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        return;
+                    }
+                }).show(); //show alert dialog
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -111,10 +125,12 @@ public class ListadoPreguntasActivity extends AppCompatActivity {
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_ListaPreguntas);
         // Crea el Adaptador con los datos de la lista anterior
         final PreguntasAdapter adaptador = new PreguntasAdapter(listaPreguntas);
+        // Si la BD está vacía devuelve true, sino false
+        boolean BDVacia = Repositorio.getRepositorio().checkEmpty(myContext);
 
-        //Si listaPreguntas está lleno, oculta el mensaje de "No hay preguntas creadas", sino, lo muestra
+        //Si la BD está vacía, oculta el mensaje de "No hay preguntas creadas", sino lo muestra
         noCreadas = (TextView) findViewById(R.id.textView_noPreguntas);
-        if(!listaPreguntas.isEmpty()){
+        if(BDVacia == false){
             noCreadas.setVisibility(View.INVISIBLE);
 
             // Asocia el elemento de la lista con una acción al ser pulsado
@@ -145,6 +161,8 @@ public class ListadoPreguntasActivity extends AppCompatActivity {
             // Muestra el RecyclerView en vertical
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+            /*
+            ------ FUNCIONA PARCIALMENTE---
             // Permite deslizar y mover elementos del RecyclerView
             new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
                 @Override
@@ -186,9 +204,11 @@ public class ListadoPreguntasActivity extends AppCompatActivity {
                         }).show(); //show alert dialog
                     }
                 }
-            }).attachToRecyclerView(recyclerView);
+            }).attachToRecyclerView(recyclerView);*/
         }else{
             noCreadas.setVisibility(View.VISIBLE);
+            adaptador.borrarDatos();
+            //adaptador.notifyDataSetChanged();
         }
         MyLog.d(TAG, "Cerrando onResume...");
     }

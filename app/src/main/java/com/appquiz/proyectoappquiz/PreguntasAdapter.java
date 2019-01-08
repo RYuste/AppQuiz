@@ -85,4 +85,11 @@ public class PreguntasAdapter extends RecyclerView.Adapter<PreguntasAdapter.Preg
         if(listener != null)
             listener.onClick(view);
     }
+
+    /**
+     * Limpia el recyclerview
+     */
+    public void borrarDatos() {
+        items.clear();
+    }
 }

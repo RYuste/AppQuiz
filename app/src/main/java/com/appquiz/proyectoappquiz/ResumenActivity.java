@@ -1,5 +1,6 @@
 package com.appquiz.proyectoappquiz;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -10,10 +11,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 public class ResumenActivity extends AppCompatActivity {
 
     private String TAG = "ResumenActivity";
+    private Context myContext;
+    private TextView cantPreguntas;
+    private TextView cantCategorias;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,8 +87,22 @@ public class ResumenActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         MyLog.d(TAG, "Iniciando onResume...");
-
         super.onResume();
+
+        // Almacenamos el contexto de la actividad para utilizar en las clases internas
+        myContext = this;
+
+        cantPreguntas = (TextView) findViewById(R.id.textViewCantPreg);
+        cantCategorias = (TextView) findViewById(R.id.textViewCantCat);
+
+        int contPreguntas = Repositorio.getRepositorio().consultaContarPreguntas(myContext);
+        int contCategorias = Repositorio.getRepositorio().consultaContarCategorias(myContext);
+
+        String contPrg = String.valueOf(contPreguntas);
+        String contCat = String.valueOf(contCategorias);
+
+        cantPreguntas.setText(contPrg);
+        cantCategorias.setText(contCat);
 
         MyLog.d(TAG, "Cerrando onResume...");
     }
