@@ -70,11 +70,16 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
         spinner = (Spinner) findViewById(R.id.spinnerCategoria);
         spinner.setAdapter(adapter);
 
-        //Botón para guardar una nueva pregunta
+        // Botón para guardar una nueva pregunta
         final Button botonGuardar = (Button) findViewById(R.id.buttonGuardar);
         // Botón para eliminar pregunta
         final Button botonEliminar = (Button) findViewById(R.id.buttonEliminar);
         final Button botonEliminar2 = (Button) findViewById(R.id.buttonEliminar2);
+        // Botón para abrir cámara
+        final Button botonCamara = (Button) findViewById(R.id.buttonCamara);
+        // Botón para abrir galería
+        final Button botonGaleria = (Button) findViewById(R.id.buttonGaleria);
+
 
         // Si el bundle NO es null, rellena los campos de EditText de la pregunta a editar
         if(bundle != null){
@@ -108,8 +113,8 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
                 imm.hideSoftInputFromWindow(enunciado.getWindowToken(), 0);
 
                 //Permisos de escritura
-                int WriteExternalStoragePermission = ContextCompat.checkSelfPermission(myContext, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                Log.d("NuevaEditaPreguntaActivity", "WRITE_EXTERNAL_STORAGE Permission: " + WriteExternalStoragePermission);
+                //int WriteExternalStoragePermission = ContextCompat.checkSelfPermission(myContext, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                //Log.d("NuevaEditaPreguntaActivity", "WRITE_EXTERNAL_STORAGE Permission: " + WriteExternalStoragePermission);
 
                 //Si alguno de los editText está vacío o no se ha seleccionado ninguna categoría, salta el snackbar
                 if(enunciado.getText().toString().isEmpty() || correcto.getText().toString().isEmpty() || falso1.getText().toString().isEmpty() ||
@@ -118,17 +123,6 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
                     Snackbar.make(view, R.string.rellenarCamposGuardar, Snackbar.LENGTH_SHORT)
                             .setAction("Action", null).show();
                 }else{
-                    if (WriteExternalStoragePermission != PackageManager.PERMISSION_GRANTED){
-                        // Permiso denegado
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                            ActivityCompat.requestPermissions(NuevaEditaPreguntaActivity.this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, CODE_WRITE_EXTERNAL_STORAGE_PERMISSION);
-                            // Una vez que se pide aceptar o rechazar el permiso se ejecuta el método "onRequestPermissionsResult" para manejar la respuesta
-                            // Si el usuario marca "No preguntar más" no se volverá a mostrar este diálogo
-                        } else {
-                            Snackbar.make(view, R.string.perEscDene, Snackbar.LENGTH_SHORT)
-                                    .setAction("Action", null).show();
-                        }
-                    }else {
                         //GUARDA LA PREGUNTA
                         Pregunta p = new Pregunta(enunciado.getText().toString(), spinner.getSelectedItem().toString(), correcto.getText().toString(),
                                                     falso1.getText().toString(), falso2.getText().toString(), falso3.getText().toString());
@@ -159,11 +153,11 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
                                         .setAction("Action", null).show();
                             }
                         }
-                    }
                 }
             }
         });
 
+        // Acción del botón ELIMINAR
         botonEliminar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
@@ -257,6 +251,36 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
             }
         });
 
+        // Acción al pulsar el botón CAMARA
+        botonCamara.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(permisosEscritura(v) == true){
+
+                    //Oculta el teclado al pulsar el botón CAMARA
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(enunciado.getWindowToken(), 0);
+
+
+                }
+            }
+        });
+
+        // Acción al pulsar el botón GALERIA
+        botonGaleria.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(permisosEscritura(v) == true){
+
+                    //Oculta el teclado al pulsar el botón GALERIA
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(enunciado.getWindowToken(), 0);
+
+
+                }
+            }
+        });
+
         MyLog.d(TAG, "Cerrando onCreate...");
     }
 
@@ -271,6 +295,35 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
                 finish();
             }
         }, 2000);
+    }
+
+    /**
+     * Método que contiene los permisos de escritura
+     *
+     * @param view
+     * @return true o false
+     */
+    public boolean permisosEscritura(View view){
+        boolean aceptar = true;
+        int WriteExternalStoragePermission = ContextCompat.checkSelfPermission(myContext, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        Log.d("NuevaEditaPregunta", "WRITE_EXTERNAL_STORAGE Permission: " + WriteExternalStoragePermission);
+
+        if (WriteExternalStoragePermission != PackageManager.PERMISSION_GRANTED){
+            // Permiso denegado
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                ActivityCompat.requestPermissions(NuevaEditaPreguntaActivity.this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, CODE_WRITE_EXTERNAL_STORAGE_PERMISSION);
+                // Una vez que se pide aceptar o rechazar el permiso se ejecuta el método "onRequestPermissionsResult" para manejar la respuesta
+                // Si el usuario marca "No preguntar más" no se volverá a mostrar este diálogo
+
+                aceptar = false;
+            } else {
+                Snackbar.make(view, R.string.perEscDene, Snackbar.LENGTH_SHORT)
+                        .setAction("Action", null).show();
+
+                aceptar = false;
+            }
+        }
+        return aceptar;
     }
 
     @Override
