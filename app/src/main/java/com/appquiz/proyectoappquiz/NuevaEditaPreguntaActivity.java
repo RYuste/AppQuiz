@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +36,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -46,6 +49,7 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
 
     private String TAG = "NuevaEditaPreguntaActivity";
     private EditText enunciado, correcto, falso1, falso2, falso3;
+    private ImageView imageView;
     private Spinner spinner;
     private ArrayAdapter<String> adapter;
 
@@ -60,6 +64,7 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
     private static final int REQUEST_SELECT_IMAGE = 201;
     final String pathFotos = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/demoAndroidImages/";
     private Uri uri;
+    private Bitmap bmp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +88,7 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
         falso1 = (EditText) findViewById(R.id.editTextRIncorrecta1);
         falso2 = (EditText) findViewById(R.id.editTextRIncorrecta2);
         falso3 = (EditText) findViewById(R.id.editTextRIncorrecta3);
+        imageView = (ImageView) findViewById(R.id.imageViewFoto);
 
         // Definición de la lista de opciones del spinner almacenados en la BD
         ArrayList<String> items = Repositorio.getRepositorio().consultaListarCategorias(myContext);
@@ -102,10 +108,11 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
         final Button botonCamara = (Button) findViewById(R.id.buttonCamara);
         // Botón para abrir galería
         final Button botonGaleria = (Button) findViewById(R.id.buttonGaleria);
-
+        // Botón para eliminar una imágen cargada en el imagenView
+        final Button botonBorrarImg = (Button) findViewById(R.id.buttonBorrarImg);
 
         // Si el bundle NO es null, rellena los campos de EditText de la pregunta a editar
-        if(bundle != null){
+        if (bundle != null) {
             // Cambia título de la actividad
             getSupportActionBar().setTitle(R.string.title_activity_editarPregunta);
             // Habilita el botón Eliminar
@@ -118,7 +125,13 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
             falso1.setText(preguntaAEditar.getIncorrecto_1());
             falso2.setText(preguntaAEditar.getIncorrecto_2());
             falso3.setText(preguntaAEditar.getIncorrecto_3());
-        }else{
+
+            // Pasar de texto a bytemap para mostrar imágen
+            byte[] decodedString = Base64.decode(preguntaAEditar.getFoto(), Base64.DEFAULT);
+            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            imageView.setImageBitmap(decodedByte);
+
+        } else {
             // Inhabilita el botón Eliminar
             botonEliminar.setEnabled(false);
             //botonEliminar.setBackgroundColor(getResources().getColor(R.color.colorEnabled);
@@ -127,55 +140,59 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
 
         // Acción al pulsar el botón GUARDAR
         botonGuardar.setOnClickListener(new View.OnClickListener() {
-
             @SuppressLint("LongLogTag")
             @Override
             public void onClick(View view) {
                 //Oculta el teclado al pulsar el botón Guardar
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(enunciado.getWindowToken(), 0);
 
-                //Permisos de escritura
-                //int WriteExternalStoragePermission = ContextCompat.checkSelfPermission(myContext, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                //Log.d("NuevaEditaPreguntaActivity", "WRITE_EXTERNAL_STORAGE Permission: " + WriteExternalStoragePermission);
-
-                //Si alguno de los editText está vacío o no se ha seleccionado ninguna categoría, salta el snackbar
-                if(enunciado.getText().toString().isEmpty() || correcto.getText().toString().isEmpty() || falso1.getText().toString().isEmpty() ||
+                //Si alguno de los editText está vacío o no se ha seleccionado ninguna categoría o imágen, salta el snackbar
+                if (enunciado.getText().toString().isEmpty() || correcto.getText().toString().isEmpty() || falso1.getText().toString().isEmpty() ||
                         falso2.getText().toString().isEmpty() || falso3.getText().toString().isEmpty() ||
-                        spinner.getAdapter().isEmpty()){
+                        spinner.getAdapter().isEmpty() || imageView.getDrawable() == null) {
                     Snackbar.make(view, R.string.rellenarCamposGuardar, Snackbar.LENGTH_SHORT)
                             .setAction("Action", null).show();
-                }else{
-                        //GUARDA LA PREGUNTA
-                        Pregunta p = new Pregunta(enunciado.getText().toString(), spinner.getSelectedItem().toString(), correcto.getText().toString(),
-                                                    falso1.getText().toString(), falso2.getText().toString(), falso3.getText().toString());
+                } else {
+                    //GUARDA LA PREGUNTA
 
-                        // Si el bundle NO en null, actualiza la pregunta, sino, crea una nueva
-                        if(bundle != null){
-                            boolean correcto = Repositorio.getRepositorio().consultaActualizarPregunta(myContext, p, bundle.getInt("ID"));
+                    // Convirtiendo la imágen a Base64 para almacenarla en la BD
+                    Bitmap resized = Bitmap.createScaledBitmap(bmp, 500, 500, true);
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    resized.compress(Bitmap.CompressFormat.JPEG,100,baos);
+                    byte[] b = baos.toByteArray();
+                    String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
 
-                            if(correcto == true){
-                                Snackbar.make(view, R.string.actualizarPregunta_exito, Snackbar.LENGTH_SHORT)
-                                        .setAction("Action", null).show();
+                    // Llamando a la pregunta
+                    Pregunta p = new Pregunta(enunciado.getText().toString(), spinner.getSelectedItem().toString(), correcto.getText().toString(),
+                            falso1.getText().toString(), falso2.getText().toString(), falso3.getText().toString(), encodedImage);
 
-                                esperarYCerrar();
-                            }else{
-                                Snackbar.make(view, R.string.actualizarPregunta_error, Snackbar.LENGTH_SHORT)
-                                        .setAction("Action", null).show();
-                            }
-                        }else{
-                            boolean correcto = Repositorio.getRepositorio().consultaAñadirPregunta(p, myContext);
+                    // Si el bundle NO en null, actualiza la pregunta, sino, crea una nueva
+                    if (bundle != null) {
+                        boolean correcto = Repositorio.getRepositorio().consultaActualizarPregunta(myContext, p, bundle.getInt("ID"));
 
-                            if(correcto == true){
-                                Snackbar.make(view, R.string.guardarPregunta_exito, Snackbar.LENGTH_SHORT)
-                                        .setAction("Action", null).show();
+                        if (correcto == true) {
+                            Snackbar.make(view, R.string.actualizarPregunta_exito, Snackbar.LENGTH_SHORT)
+                                    .setAction("Action", null).show();
 
-                                esperarYCerrar();
-                            }else{
-                                Snackbar.make(view, R.string.guardarPregunta_error, Snackbar.LENGTH_SHORT)
-                                        .setAction("Action", null).show();
-                            }
+                            esperarYCerrar();
+                        } else {
+                            Snackbar.make(view, R.string.actualizarPregunta_error, Snackbar.LENGTH_SHORT)
+                                    .setAction("Action", null).show();
                         }
+                    } else {
+                        boolean correcto = Repositorio.getRepositorio().consultaAñadirPregunta(p, myContext);
+
+                        if (correcto == true) {
+                            Snackbar.make(view, R.string.guardarPregunta_exito, Snackbar.LENGTH_SHORT)
+                                    .setAction("Action", null).show();
+
+                            esperarYCerrar();
+                        } else {
+                            Snackbar.make(view, R.string.guardarPregunta_error, Snackbar.LENGTH_SHORT)
+                                    .setAction("Action", null).show();
+                        }
+                    }
                 }
             }
         });
@@ -185,24 +202,24 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
             @Override
             public void onClick(final View view) {
                 //Oculta el teclado al pulsar el botón Guardar
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(enunciado.getWindowToken(), 0);
 
                 // Elimina la pregunta
                 AlertDialog.Builder builder = new AlertDialog.Builder(NuevaEditaPreguntaActivity.this);
                 builder.setMessage("¿Deseas eliminar esta pregunta?"); //set message
 
-                builder.setPositiveButton("ELIMINAR", new DialogInterface.OnClickListener(){
+                builder.setPositiveButton("ELIMINAR", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         boolean correcto = Repositorio.getRepositorio().consultaEliminarPregunta(myContext, bundle.getInt("ID"));
 
-                        if(correcto == true){
+                        if (correcto == true) {
                             Snackbar.make(view, R.string.eliminarPregunta_exito, Snackbar.LENGTH_SHORT)
                                     .setAction("Action", null).show();
 
                             esperarYCerrar();
-                        }else{
+                        } else {
                             Snackbar.make(view, R.string.eliminarPregunta_error, Snackbar.LENGTH_SHORT)
                                     .setAction("Action", null).show();
                         }
@@ -243,7 +260,7 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
                                     public void onClick(DialogInterface dialogBox, int id) {
                                         boolean correcto = true;
                                         // Si se intenta Aceptar con el dialog vacío, salta un error
-                                        if(dialogInput.getText().toString().isEmpty()){
+                                        if (dialogInput.getText().toString().isEmpty()) {
                                             Snackbar.make(view, R.string.error_guardarCategoria, Snackbar.LENGTH_SHORT)
                                                     .setAction("Action", null).show();
                                             correcto = false;
@@ -256,7 +273,7 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
                                                 correcto = false;
                                             }
                                         }
-                                        if(correcto == true){
+                                        if (correcto == true) {
                                             adapter.add(dialogInput.getText().toString());
                                             spinner.setSelection(adapter.getPosition(dialogInput.getText().toString()));
                                         }
@@ -274,14 +291,28 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
             }
         });
 
+        // Acción al pulsar el botón BORRAR IMÁGEN
+        botonBorrarImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(imageView.getDrawable() != null){
+                    botonBorrarImg.setEnabled(true);
+                    imageView.setImageDrawable(null);
+                }else{
+                    botonBorrarImg.setEnabled(false);
+                }
+            }
+        });
+
         // Acción al pulsar el botón CAMARA
         botonCamara.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(permisosEscritura(v) == true){
+                if (permisosEscritura(v) == true) {
 
                     //Oculta el teclado al pulsar el botón CAMARA
-                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(enunciado.getWindowToken(), 0);
 
                     try {
@@ -290,13 +321,12 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
                         dirFotos.mkdirs();
 
                         // Se crea el archivo para almacenar la fotografía
-                        File fileFoto = File.createTempFile(getFileCode(),".jpg", dirFotos);
+                        File fileFoto = File.createTempFile(getFileCode(), ".jpg", dirFotos);
 
                         // Se crea el objeto Uri a partir del archivo
                         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
                         StrictMode.setVmPolicy(builder.build());
                         uri = Uri.fromFile(fileFoto);
-                        Log.d(TAG, uri.getPath().toString());
 
                         // Se crea la comunicación con la cámara
                         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -319,10 +349,10 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
         botonGaleria.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(permisosEscritura(v) == true){
+                if (permisosEscritura(v) == true) {
 
                     //Oculta el teclado al pulsar el botón GALERIA
-                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(enunciado.getWindowToken(), 0);
 
                     Intent intent = new Intent();
@@ -348,9 +378,8 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case (REQUEST_CAPTURE_IMAGE):
-                if(resultCode == Activity.RESULT_OK){
+                if (resultCode == Activity.RESULT_OK) {
                     // Se carga la imagen desde un objeto URI al imageView
-                    ImageView imageView = findViewById(R.id.imageViewFoto);
                     imageView.setImageURI(uri);
 
                     // Se le envía un broadcast a la Galería para que se actualice
@@ -380,10 +409,8 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
                         }
 
                         // Se transformam los bytes de la imagen a un Bitmap
-                        Bitmap bmp = BitmapFactory.decodeStream(imageStream);
-
+                        bmp = BitmapFactory.decodeStream(imageStream);
                         // Se carga el Bitmap en el ImageView
-                        ImageView imageView = findViewById(R.id.imageViewFoto);
                         imageView.setImageBitmap(bmp);
                     }
                 }
@@ -396,7 +423,7 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
      *
      * @return date
      */
-    private String getFileCode(){
+    private String getFileCode() {
         // Se crea un código a partir de la fecha y hora
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyymmddhhmmss", java.util.Locale.getDefault());
         String date = dateFormat.format(new Date());
@@ -423,15 +450,15 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
      * @param view
      * @return true o false
      */
-    public boolean permisosEscritura(View view){
+    public boolean permisosEscritura(View view) {
         boolean aceptar = true;
         int WriteExternalStoragePermission = ContextCompat.checkSelfPermission(myContext, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         Log.d("NuevaEditaPregunta", "WRITE_EXTERNAL_STORAGE Permission: " + WriteExternalStoragePermission);
 
-        if (WriteExternalStoragePermission != PackageManager.PERMISSION_GRANTED){
+        if (WriteExternalStoragePermission != PackageManager.PERMISSION_GRANTED) {
             // Permiso denegado
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                ActivityCompat.requestPermissions(NuevaEditaPreguntaActivity.this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, CODE_WRITE_EXTERNAL_STORAGE_PERMISSION);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                ActivityCompat.requestPermissions(NuevaEditaPreguntaActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, CODE_WRITE_EXTERNAL_STORAGE_PERMISSION);
                 // Una vez que se pide aceptar o rechazar el permiso se ejecuta el método "onRequestPermissionsResult" para manejar la respuesta
                 // Si el usuario marca "No preguntar más" no se volverá a mostrar este diálogo
 
@@ -468,9 +495,9 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
     /**
      * Crea una flecha para volver atrás
      */
-    private void setupActionBar(){
+    private void setupActionBar() {
         ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null){
+        if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }

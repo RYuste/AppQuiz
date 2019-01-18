@@ -86,8 +86,9 @@ public class Repositorio {
                 String incorrecto_1 = c.getString(c.getColumnIndex("incorrecto_1"));
                 String incorrecto_2 = c.getString(c.getColumnIndex("incorrecto_2"));
                 String incorrecto_3 = c.getString(c.getColumnIndex("incorrecto_3"));
+                String foto = c.getString(c.getColumnIndex("foto"));
 
-                Pregunta p = new Pregunta(id_pregunta, enunciado, categoria, correcto, incorrecto_1, incorrecto_2, incorrecto_3);
+                Pregunta p = new Pregunta(id_pregunta, enunciado, categoria, correcto, incorrecto_1, incorrecto_2, incorrecto_3, foto);
                 listaPreguntas.add(p);
             } while(c.moveToNext());
         }
@@ -120,8 +121,9 @@ public class Repositorio {
             String incorrecto_1 = c.getString(c.getColumnIndex("incorrecto_1"));
             String incorrecto_2 = c.getString(c.getColumnIndex("incorrecto_2"));
             String incorrecto_3 = c.getString(c.getColumnIndex("incorrecto_3"));
+            String foto = c.getString(c.getColumnIndex("foto"));
 
-            p = new Pregunta(enunciado, categoria, correcto, incorrecto_1, incorrecto_2, incorrecto_3);
+            p = new Pregunta(enunciado, categoria, correcto, incorrecto_1, incorrecto_2, incorrecto_3, foto);
         }
         db.close();
         MyLog.d(TAG, "Saliendo del método ListarPreguntaEditar...");
@@ -144,9 +146,9 @@ public class Repositorio {
         SQLiteDatabase db = bd.getWritableDatabase();
 
         if(db != null){
-            db.execSQL("INSERT INTO Pregunta(enunciado, categoria, correcto, incorrecto_1, incorrecto_2, incorrecto_3) " +
+            db.execSQL("INSERT INTO Pregunta(enunciado, categoria, correcto, incorrecto_1, incorrecto_2, incorrecto_3, foto) " +
                     "VALUES('"+p.getEnunciado()+"', '"+p.getCategoria()+"', '"+p.getCorrecto()+"', " +
-                    "'"+p.getIncorrecto_1()+"', '"+p.getIncorrecto_2()+"', '"+p.getIncorrecto_3()+"')");
+                    "'"+p.getIncorrecto_1()+"', '"+p.getIncorrecto_2()+"', '"+p.getIncorrecto_3()+"', '"+p.getFoto()+"')");
 
             correcto = true;
 
@@ -181,7 +183,7 @@ public class Repositorio {
         if(db != null){
             db.execSQL("UPDATE Pregunta SET enunciado = '"+p.getEnunciado()+"', categoria = '"+p.getCategoria()+"', " +
                     "correcto = '"+p.getCorrecto()+"', incorrecto_1 = '"+p.getIncorrecto_1()+"', incorrecto_2 = '"+p.getIncorrecto_2()+"'" +
-                    ", incorrecto_3 = '"+p.getIncorrecto_3()+"' WHERE id_pregunta = '"+id+"'");
+                    ", incorrecto_3 = '"+p.getIncorrecto_3()+"', foto = '"+p.getFoto()+"' WHERE id_pregunta = '"+id+"'");
 
             correcto = true;
 

@@ -9,7 +9,7 @@ public class BaseDeDatos extends SQLiteOpenHelper {
 
     //Sentencia SQL para crear la tabla Pregunta
     String sqlCreate = "CREATE TABLE Pregunta (id_pregunta INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, enunciado TEXT, categoria TEXT, " +
-            "correcto TEXT, incorrecto_1 TEXT, incorrecto_2 TEXT, incorrecto_3 TEXT)";
+            "correcto TEXT, incorrecto_1 TEXT, incorrecto_2 TEXT, incorrecto_3 TEXT, foto TEXT)";
 
     //Constructor
     public BaseDeDatos(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
