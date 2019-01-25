@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -128,13 +129,12 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
 
             // Pasar de texto a bytemap para mostrar imágen
             byte[] decodedString = Base64.decode(preguntaAEditar.getFoto(), Base64.DEFAULT);
-            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-            imageView.setImageBitmap(decodedByte);
+            bmp = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            imageView.setImageBitmap(bmp);
 
         } else {
             // Inhabilita el botón Eliminar
             botonEliminar.setEnabled(false);
-            //botonEliminar.setBackgroundColor(getResources().getColor(R.color.colorEnabled);
             botonEliminar.setVisibility(View.INVISIBLE);
         }
 
@@ -154,12 +154,13 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
                     Snackbar.make(view, R.string.rellenarCamposGuardar, Snackbar.LENGTH_SHORT)
                             .setAction("Action", null).show();
                 } else {
-                    //GUARDA LA PREGUNTA
+                    /* GUARDA LA PREGUNTA */
 
                     // Convirtiendo la imágen a Base64 para almacenarla en la BD
-                    Bitmap resized = Bitmap.createScaledBitmap(bmp, 500, 500, true);
+                    Bitmap imgBitmap = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
+                    //imgBitmap = Bitmap.createScaledBitmap(bmp, 500, 500, true);
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    resized.compress(Bitmap.CompressFormat.JPEG,100,baos);
+                    imgBitmap.compress(Bitmap.CompressFormat.JPEG,100, baos);
                     byte[] b = baos.toByteArray();
                     String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
 
@@ -305,7 +306,7 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
             }
         });
 
-        // Acción al pulsar el botón CAMARA
+        // Acción al pulsar el botón CÁMARA
         botonCamara.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -345,7 +346,7 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
             }
         });
 
-        // Acción al pulsar el botón GALERIA
+        // Acción al pulsar el botón GALERÍA
         botonGaleria.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -369,7 +370,7 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
     }
 
     /**
-     * Método encargado de qué hacer cuando se cierra la cámara o la galería
+     * Carga una imágen seleccionada de la cámara o la galería
      *
      * @param requestCode
      * @param resultCode
@@ -380,7 +381,13 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
             case (REQUEST_CAPTURE_IMAGE):
                 if (resultCode == Activity.RESULT_OK) {
                     // Se carga la imagen desde un objeto URI al imageView
-                    imageView.setImageURI(uri);
+                    try {
+                        bmp = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Bitmap bmpResized = Bitmap.createScaledBitmap(bmp, 500, 500, true);
+                    imageView.setImageBitmap(bmpResized);
 
                     // Se le envía un broadcast a la Galería para que se actualice
                     Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
@@ -388,19 +395,19 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
                     sendBroadcast(mediaScanIntent);
                 } else if (resultCode == Activity.RESULT_CANCELED) {
                     // Se borra el archivo temporal
-                    File file = new File(uri.getPath());
+                    file = new File(uri.getPath());
                     file.delete();
                 }
                 break;
 
             case (REQUEST_SELECT_IMAGE):
                 if (resultCode == Activity.RESULT_OK) {
-                    // Se carga la imagen desde un objeto Bitmap
+                    // Se carga la imágen desde un objeto Bitmap
                     Uri selectedImage = data.getData();
                     String selectedPath = selectedImage.getPath();
 
                     if (selectedPath != null) {
-                        // Se leen los bytes de la imagen
+                        // Se lee los bytes de la imágen
                         InputStream imageStream = null;
                         try {
                             imageStream = getContentResolver().openInputStream(selectedImage);
@@ -410,8 +417,9 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
 
                         // Se transformam los bytes de la imagen a un Bitmap
                         bmp = BitmapFactory.decodeStream(imageStream);
+                        Bitmap bmpResized = Bitmap.createScaledBitmap(bmp, 500, 500, true);
                         // Se carga el Bitmap en el ImageView
-                        imageView.setImageBitmap(bmp);
+                        imageView.setImageBitmap(bmpResized);
                     }
                 }
                 break;
