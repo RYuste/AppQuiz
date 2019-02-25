@@ -11,6 +11,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ResumenActivity extends AppCompatActivity {
@@ -19,6 +23,10 @@ public class ResumenActivity extends AppCompatActivity {
     private Context myContext;
     private TextView cantPreguntas;
     private TextView cantCategorias;
+
+    private Animation animation;
+    private ImageView imgAnimation;
+    private Button btnAnimation, btnAnimationStop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,17 +37,41 @@ public class ResumenActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        imgAnimation = (ImageView) findViewById(R.id.imageAnimation);
+        btnAnimation = (Button) findViewById(R.id.buttonAnimation);
+        btnAnimationStop = (Button) findViewById(R.id.buttonStop);
+
+        btnAnimation.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void onClick(View v) {
+                trans();
             }
         });
 
+        btnAnimationStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                transStop();
+            }
+        });
 
         MyLog.d(TAG, "Cerrando onCreate...");
+    }
+
+    /**
+     * Inicia la animación
+     */
+    private void trans(){
+        animation = AnimationUtils.loadAnimation(this, R.anim.trans);
+        animation.setFillAfter(true);
+        imgAnimation.startAnimation(animation);
+    }
+
+    /**
+     * Detiene la animación
+     */
+    private void transStop(){
+        imgAnimation.clearAnimation();
     }
 
     /*--------------------- AJUSTES ------------------------------------------------*/
