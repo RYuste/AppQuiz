@@ -70,7 +70,7 @@ public class ListadoPreguntasActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_delete:
-                Log.i("ActionBar", "Borrar Listado de Preguntas");
+                Log.i("ActionBar", "Borrar listado de Preguntas");
 
                 // Elimina la lista de preguntas
                 AlertDialog.Builder builder = new AlertDialog.Builder(ListadoPreguntasActivity.this);
@@ -88,9 +88,20 @@ public class ListadoPreguntasActivity extends AppCompatActivity {
                         return;
                     }
                 }).show(); //show alert dialog
+            case R.id.action_settings:
+                Log.i("ActionBar", "Exportar listado de preguntas");;
+                //startActivity(new Intent(ResumenActivity.this, AcercadeActivity.class));
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    /**
+     * Crea un archivo
+     */
+    private void exportarXML(){
+
     }
 
     @Override

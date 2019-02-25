@@ -147,14 +147,19 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(enunciado.getWindowToken(), 0);
 
-                //Si alguno de los editText está vacío o no se ha seleccionado ninguna categoría o imágen, salta el snackbar
+                //Si alguno de los editText está vacío o no se ha seleccionado ninguna categoría, salta el snackbar
                 if (enunciado.getText().toString().isEmpty() || correcto.getText().toString().isEmpty() || falso1.getText().toString().isEmpty() ||
                         falso2.getText().toString().isEmpty() || falso3.getText().toString().isEmpty() ||
-                        spinner.getAdapter().isEmpty() || imageView.getDrawable() == null) {
+                        spinner.getAdapter().isEmpty()) {
                     Snackbar.make(view, R.string.rellenarCamposGuardar, Snackbar.LENGTH_SHORT)
                             .setAction("Action", null).show();
                 } else {
                     /* GUARDA LA PREGUNTA */
+
+                    // Si el imagenView está vacío añade una imágen por defecto
+                    if(imageView.getDrawable() == null){
+                        imageView.setImageResource(R.drawable.fotodefectocamera);
+                    }
 
                     // Convirtiendo la imágen a Base64 para almacenarla en la BD
                     Bitmap imgBitmap = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
@@ -296,7 +301,6 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
         botonBorrarImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 if(imageView.getDrawable() != null){
                     botonBorrarImg.setEnabled(true);
                     imageView.setImageDrawable(null);

@@ -3,7 +3,12 @@ package com.appquiz.proyectoappquiz;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Xml;
 
+import org.xmlpull.v1.XmlSerializer;
+
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 public class Repositorio {
@@ -331,5 +336,43 @@ public class Repositorio {
 
         MyLog.d(TAG, "Entrando en consultaContarCategorias...");
         return contador;
+    }
+
+    /**
+     * Genera un XML del listado de preguntas
+     *
+     * @return xml
+     * @throws IllegalArgumentException
+     * @throws IllegalStateException
+     * @throws IOException
+     */
+    public static String CreateXMLString() throws IllegalArgumentException, IllegalStateException, IOException{
+        XmlSerializer xmlSerializer = Xml.newSerializer();
+        StringWriter writer = new StringWriter();
+
+        xmlSerializer.setOutput(writer);
+
+        //Start Document
+       /* xmlSerializer.startDocument("UTF-8", true);
+        xmlSerializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
+        //Open Tag <file>
+        xmlSerializer.startTag("", "file");
+
+        xmlSerializer.startTag("", "something");
+        xmlSerializer.attribute("", "ID", "000001");
+
+        xmlSerializer.startTag("", "name");
+        xmlSerializer.text("CO");
+        xmlSerializer.endTag("", "name");
+
+        xmlSerializer.endTag("", "something");*/
+
+
+
+        //end tag <file>
+        xmlSerializer.endTag("", "fileXML");
+        xmlSerializer.endDocument();
+
+        return writer.toString();
     }
 }
