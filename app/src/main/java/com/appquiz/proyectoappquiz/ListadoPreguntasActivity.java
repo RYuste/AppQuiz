@@ -1,9 +1,14 @@
 package com.appquiz.proyectoappquiz;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -16,11 +21,15 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -29,6 +38,9 @@ public class ListadoPreguntasActivity extends AppCompatActivity {
     private String TAG = "ListadoPreguntasActivity";
     private Context myContext;
     private TextView noCreadas;
+
+    CharginBroadCastReceiver charginBroadCastReceiver = new CharginBroadCastReceiver();
+    private IntentFilter chargingIntentFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,9 +100,10 @@ public class ListadoPreguntasActivity extends AppCompatActivity {
                         return;
                     }
                 }).show(); //show alert dialog
-            case R.id.action_settings:
-                Log.i("ActionBar", "Exportar listado de preguntas");;
-                //startActivity(new Intent(ResumenActivity.this, AcercadeActivity.class));
+                return true;
+            case R.id.action_export:
+                Intent emailXML = exportarXML(myContext);
+                startActivity(Intent.createChooser(emailXML, "Exportar Listado"));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -98,10 +111,39 @@ public class ListadoPreguntasActivity extends AppCompatActivity {
     }
 
     /**
-     * Crea un archivo
+     * Crea y envía un archivo xml a un e-mail.
+     *
+     * @param myContext
+     * @return xml
      */
-    private void exportarXML(){
+    private static Intent exportarXML(Context myContext){
+        String root = Environment.getExternalStorageDirectory().toString();
+        File myDir = new File(root + "/exportarListadoPreguntas");
+        String fname = "listadoPreguntas.xml";
+        File file = new File (myDir, fname);
+        try{
+            if (!myDir.exists()) {
+                myDir.mkdirs();
+            }
+            if (file.exists ())
+                file.delete ();
+            FileWriter fw=new FileWriter(file);
+            fw.write(Repositorio.CreateXMLString(myContext));
+            fw.close();
+        }catch (Exception ex){
+            MyLog.e("Fichero", "Error al escribir el fichero.");
+        }
 
+        String cadena = myDir.getAbsolutePath()+"/"+fname;
+        Uri path = Uri.parse("file://"+cadena);
+
+        Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                "mailto","rafalinyj@gmail.com", null));
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Listado de Preguntas Exportadas");
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "Listado de preguntas de APPQuiz");
+        emailIntent .putExtra(Intent.EXTRA_STREAM, path);
+
+        return emailIntent;
     }
 
     @Override
@@ -109,6 +151,8 @@ public class ListadoPreguntasActivity extends AppCompatActivity {
         MyLog.d(TAG, "Iniciando onStart...");
 
         super.onStart();
+        chargingIntentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(charginBroadCastReceiver, chargingIntentFilter);
 
         MyLog.d(TAG, "Cerrando onStart...");
     }
@@ -238,6 +282,7 @@ public class ListadoPreguntasActivity extends AppCompatActivity {
         MyLog.d(TAG, "Iniciando onStop...");
 
         super.onStop();
+        unregisterReceiver(charginBroadCastReceiver);
 
         MyLog.d(TAG, "Cerrando onStop...");
     }

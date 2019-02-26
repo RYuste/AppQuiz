@@ -339,38 +339,79 @@ public class Repositorio {
     }
 
     /**
-     * Genera un XML del listado de preguntas
+     * Genera un XML del listado de preguntas.
      *
+     * @param myContext
      * @return xml
      * @throws IllegalArgumentException
      * @throws IllegalStateException
      * @throws IOException
      */
-    public static String CreateXMLString() throws IllegalArgumentException, IllegalStateException, IOException{
+    public static String CreateXMLString(Context myContext) throws IllegalArgumentException, IllegalStateException, IOException{
         XmlSerializer xmlSerializer = Xml.newSerializer();
         StringWriter writer = new StringWriter();
 
+        ArrayList<Pregunta> listaPreguntas = Repositorio.getRepositorio().consultaListarPreguntas(myContext);
+
         xmlSerializer.setOutput(writer);
 
-        //Start Document
-       /* xmlSerializer.startDocument("UTF-8", true);
+        // Start Document
+        xmlSerializer.startDocument("UTF-8", true);
         xmlSerializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
-        //Open Tag <file>
-        xmlSerializer.startTag("", "file");
 
-        xmlSerializer.startTag("", "something");
-        xmlSerializer.attribute("", "ID", "000001");
+        // Open Tag quiz
+        xmlSerializer.startTag("", "quiz");
 
-        xmlSerializer.startTag("", "name");
-        xmlSerializer.text("CO");
-        xmlSerializer.endTag("", "name");
+        for(Pregunta p: listaPreguntas){
+            // Categoria
+            xmlSerializer.startTag("", "question");
+            xmlSerializer.attribute("", "type", p.getCategoria());
+            xmlSerializer.startTag("", "category");
+            xmlSerializer.text(p.getCategoria());
+            xmlSerializer.endTag("", "category");
+            xmlSerializer.endTag("", "question");
+            // Pregunta
+            xmlSerializer.startTag("", "question");
+            xmlSerializer.attribute("", "type", "multichoice");
+            xmlSerializer.startTag("", "name");
+            xmlSerializer.text(p.getEnunciado());
+            xmlSerializer.endTag("", "name");
+            xmlSerializer.startTag("","questiontext");
+            xmlSerializer.attribute("", "format", "html");
+            xmlSerializer.text(p.getEnunciado());
+            xmlSerializer.startTag("","file");
+            xmlSerializer.attribute("", "name", p.getFoto());
+            xmlSerializer.attribute("", "path", "/");
+            xmlSerializer.attribute("", "encoding", "base64");
+            xmlSerializer.endTag("", "file");
+            xmlSerializer.endTag("", "questiontext");
+            xmlSerializer.startTag("","answernumbering");
+            xmlSerializer.endTag("", "answernumbering");
+            xmlSerializer.startTag("","answer");
+            xmlSerializer.attribute("","fraction", "100");
+            xmlSerializer.attribute("", "format", "html");
+            xmlSerializer.text(p.getCorrecto());
+            xmlSerializer.endTag("", "answer");
+            xmlSerializer.startTag("","answer");
+            xmlSerializer.attribute("","fraction", "0");
+            xmlSerializer.attribute("", "format", "html");
+            xmlSerializer.text(p.getIncorrecto_1());
+            xmlSerializer.endTag("", "answer");
+            xmlSerializer.startTag("","answer");
+            xmlSerializer.attribute("","fraction", "0");
+            xmlSerializer.attribute("", "format", "html");
+            xmlSerializer.text(p.getIncorrecto_2());
+            xmlSerializer.endTag("", "answer");
+            xmlSerializer.startTag("","answer");
+            xmlSerializer.attribute("","fraction", "0");
+            xmlSerializer.attribute("", "format", "html");
+            xmlSerializer.text(p.getIncorrecto_3());
+            xmlSerializer.endTag("", "answer");
+            xmlSerializer.endTag("","question");
+        }
 
-        xmlSerializer.endTag("", "something");*/
-
-
-
-        //end tag <file>
-        xmlSerializer.endTag("", "fileXML");
+        // End tag quiz
+        xmlSerializer.endTag("", "quiz");
         xmlSerializer.endDocument();
 
         return writer.toString();
