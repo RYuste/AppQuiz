@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -54,16 +53,12 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
     private Spinner spinner;
     private ArrayAdapter<String> adapter;
 
-    private final String ruta_fotos = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/misfotos/";
-    private File file = new File(ruta_fotos);
-
-    final private int CODE_WRITE_EXTERNAL_STORAGE_PERMISSION = 123;
     private Context myContext;
     private ConstraintLayout constraintLayoutMainActivity;
 
-    private static final int REQUEST_CAPTURE_IMAGE = 200;
-    private static final int REQUEST_SELECT_IMAGE = 201;
-    final String pathFotos = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/demoAndroidImages/";
+    Constants constants = new Constants();
+    private File file = new File(constants.RUTA_FOTOS);
+
     private Uri uri;
     private Bitmap bmp;
 
@@ -322,7 +317,7 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
 
                     try {
                         // Se crea el directorio para las fotografías
-                        File dirFotos = new File(pathFotos);
+                        File dirFotos = new File(constants.PATH_FOTOS);
                         dirFotos.mkdirs();
 
                         // Se crea el archivo para almacenar la fotografía
@@ -338,7 +333,7 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
                         // Se le indica dónde almacenar la fotografía
                         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
                         // Se lanza la cámara y se espera su resultado
-                        startActivityForResult(cameraIntent, REQUEST_CAPTURE_IMAGE);
+                        startActivityForResult(cameraIntent, constants.REQUEST_CAPTURE_IMAGE);
 
                     } catch (IOException ex) {
                         Log.d(TAG, "Error: " + ex);
@@ -365,7 +360,7 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
                     intent.setAction(Intent.ACTION_GET_CONTENT);
                     startActivityForResult(
                             Intent.createChooser(intent, "Selecciona una imágen"),
-                            REQUEST_SELECT_IMAGE);
+                            constants.REQUEST_SELECT_IMAGE);
                 }
             }
         });
@@ -382,7 +377,7 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
      */
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case (REQUEST_CAPTURE_IMAGE):
+            case (Constants.REQUEST_CAPTURE_IMAGE):
                 if (resultCode == Activity.RESULT_OK) {
                     // Se carga la imagen desde un objeto URI al imageView
                     try {
@@ -404,7 +399,7 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
                 }
                 break;
 
-            case (REQUEST_SELECT_IMAGE):
+            case (Constants.REQUEST_SELECT_IMAGE):
                 if (resultCode == Activity.RESULT_OK) {
                     // Se carga la imágen desde un objeto Bitmap
                     Uri selectedImage = data.getData();
@@ -470,7 +465,7 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
         if (WriteExternalStoragePermission != PackageManager.PERMISSION_GRANTED) {
             // Permiso denegado
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                ActivityCompat.requestPermissions(NuevaEditaPreguntaActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, CODE_WRITE_EXTERNAL_STORAGE_PERMISSION);
+                ActivityCompat.requestPermissions(NuevaEditaPreguntaActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, constants.CODE_WRITE_EXTERNAL_STORAGE_PERMISSION);
                 // Una vez que se pide aceptar o rechazar el permiso se ejecuta el método "onRequestPermissionsResult" para manejar la respuesta
                 // Si el usuario marca "No preguntar más" no se volverá a mostrar este diálogo
 
@@ -488,7 +483,7 @@ public class NuevaEditaPreguntaActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
-            case CODE_WRITE_EXTERNAL_STORAGE_PERMISSION:
+            case Constants.CODE_WRITE_EXTERNAL_STORAGE_PERMISSION:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // Permiso aceptado
                     Snackbar.make(constraintLayoutMainActivity, R.string.perEscAcep, Snackbar.LENGTH_SHORT)

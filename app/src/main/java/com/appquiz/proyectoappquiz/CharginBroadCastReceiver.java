@@ -17,9 +17,9 @@ public class CharginBroadCastReceiver extends BroadcastReceiver {
                     ConnectivityManager.EXTRA_NO_CONNECTIVITY, false
             );
             if(noConexion){
-                Toast.makeText(context, "No tienes conexión a Internet", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.desconectado, Toast.LENGTH_SHORT).show();
             }else{
-                Toast.makeText(context, "Conectado a Internet", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.conectado, Toast.LENGTH_SHORT).show();
             }
         }
     }

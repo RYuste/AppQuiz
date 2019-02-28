@@ -33,4 +33,15 @@
     <string name="borrarListado">Borrar Listado</string>
     <string name="eliminarPregunta_exito">Pregunta eliminada con éxito.</string>
     <string name="eliminarPregunta_error">Error al eliminar la pregunta.</string>
+    <string name="conectado">Conectado a Internet</string>
+    <string name="desconectado">No tienes conexión a Internet</string>
+    <string name="prgDisponibles">Preguntas disponibles:</string>
+    <string name="catgDisponibles">Categorías disponibles:</string>
+    <string name="animIniciar">INICIAR</string>
+    <string name="animDetener">DETENER</string>
+    <string name="eliminar">ELIMINAR</string>
+    <string name="eliminarListado">¿Deseas eliminar el listado de preguntas?</string>
+    <string name="exportarListado">Exportar Listado</string>
+    <string name="msgPreguntasExp">Listado de Preguntas Exportadas</string>
+    <string name="msgPreguntasExpApp">Listado de preguntas de APPQuiz.</string>
 </resources>

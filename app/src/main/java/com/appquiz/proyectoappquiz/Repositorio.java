@@ -14,6 +14,7 @@ import java.util.ArrayList;
 public class Repositorio {
 
     private String TAG = "Repositorio";
+    Constants constants = new Constants();
 
     // Singleton
     private static Repositorio miRepo = null;
@@ -41,10 +42,10 @@ public class Repositorio {
      */
     public boolean checkEmpty(Context myContext){
         int count = 0;
-        BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
+        BaseDeDatos bd = new BaseDeDatos(myContext, constants.BDNOMBRE, null, 1);
         SQLiteDatabase db = bd.getWritableDatabase();
 
-        Cursor cursor = db.rawQuery("SELECT count(*) FROM Pregunta", null);
+        Cursor cursor = db.rawQuery(constants.BD_CHECKEMPTY, null);
 
         try {
             if(cursor != null)
@@ -73,10 +74,10 @@ public class Repositorio {
     public ArrayList<Pregunta> consultaListarPreguntas(Context myContext){
         MyLog.d(TAG, "Entrando en ListarPreguntas...");
 
-        BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
+        BaseDeDatos bd = new BaseDeDatos(myContext, constants.BDNOMBRE, null, 1);
         SQLiteDatabase db = bd.getWritableDatabase();
 
-        Cursor c = db.rawQuery(" SELECT * FROM Pregunta", null);
+        Cursor c = db.rawQuery(constants.BD_LISTARPREGUNTAS, null);
 
         //Nos aseguramos de que existe al menos un registro
         if (c.moveToFirst()) {
@@ -112,7 +113,7 @@ public class Repositorio {
     public Pregunta consultaListarPreguntaEditar(Context myContext, int id){
         MyLog.d(TAG, "Entrando en ListarPreguntaEditar...");
 
-        BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
+        BaseDeDatos bd = new BaseDeDatos(myContext, constants.BDNOMBRE, null, 1);
         SQLiteDatabase db = bd.getWritableDatabase();
 
         Pregunta p = null;
@@ -147,7 +148,7 @@ public class Repositorio {
         MyLog.d(TAG, "Entrando en AñadirPregunta...");
 
         boolean correcto;
-        BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
+        BaseDeDatos bd = new BaseDeDatos(myContext, constants.BDNOMBRE, null, 1);
         SQLiteDatabase db = bd.getWritableDatabase();
 
         if(db != null){
@@ -182,7 +183,7 @@ public class Repositorio {
         MyLog.d(TAG, "Entrando en ActualizarPregunta...");
 
         boolean correcto;
-        BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
+        BaseDeDatos bd = new BaseDeDatos(myContext, constants.BDNOMBRE, null, 1);
         SQLiteDatabase db = bd.getWritableDatabase();
 
         if(db != null){
@@ -213,10 +214,10 @@ public class Repositorio {
     public ArrayList<String> consultaListarCategorias(Context myContext){
         MyLog.d(TAG, "Entrando en ListarCategorias...");
 
-        BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
+        BaseDeDatos bd = new BaseDeDatos(myContext, constants.BDNOMBRE, null, 1);
         SQLiteDatabase db = bd.getWritableDatabase();
 
-        Cursor c = db.rawQuery(" SELECT DISTINCT categoria FROM Pregunta ORDER BY categoria ", null);
+        Cursor c = db.rawQuery(constants.BD_LISTARCATEGORIAS, null);
 
         //Nos aseguramos de que existe al menos un registro
         if (c.moveToFirst()) {
@@ -245,7 +246,7 @@ public class Repositorio {
         MyLog.d(TAG, "Entrando en EliminarPregunta...");
 
         boolean correcto;
-        BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
+        BaseDeDatos bd = new BaseDeDatos(myContext, constants.BDNOMBRE, null, 1);
         SQLiteDatabase db = bd.getWritableDatabase();
 
         if(db != null){
@@ -273,10 +274,10 @@ public class Repositorio {
     public void consultaBorrarListadoPreguntas(Context myContext){
         MyLog.d(TAG, "Entrando en BorrarListadoPreguntas...");
 
-        BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
+        BaseDeDatos bd = new BaseDeDatos(myContext, constants.BDNOMBRE, null, 1);
         SQLiteDatabase db = bd.getWritableDatabase();
 
-        db.execSQL("DELETE FROM Pregunta");
+        db.execSQL(constants.BD_BORRARLISTADO);
         db.close();
 
         MyLog.d(TAG, "Saliendo del método BorrarListadoPreguntas...");
@@ -292,10 +293,10 @@ public class Repositorio {
         MyLog.d(TAG, "Entrando en consultaContarPreguntas...");
         int contador = 0;
 
-        BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
+        BaseDeDatos bd = new BaseDeDatos(myContext, constants.BDNOMBRE, null, 1);
         SQLiteDatabase db = bd.getWritableDatabase();
 
-        Cursor c = db.rawQuery(" SELECT * FROM Pregunta", null);
+        Cursor c = db.rawQuery(constants.BD_LISTARPREGUNTAS, null);
 
         //Nos aseguramos de que existe al menos un registro
         if (c.moveToFirst()) {
@@ -320,10 +321,10 @@ public class Repositorio {
         MyLog.d(TAG, "Entrando en consultaContarCategorias...");
         int contador = 0;
 
-        BaseDeDatos bd = new BaseDeDatos(myContext, "BDPregunta", null, 1);
+        BaseDeDatos bd = new BaseDeDatos(myContext, constants.BDNOMBRE, null, 1);
         SQLiteDatabase db = bd.getWritableDatabase();
 
-        Cursor c = db.rawQuery(" SELECT DISTINCT categoria FROM Pregunta ORDER BY categoria ", null);
+        Cursor c = db.rawQuery(constants.BD_LISTARCATEGORIAS, null);
 
         //Nos aseguramos de que existe al menos un registro
         if (c.moveToFirst()) {

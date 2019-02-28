@@ -1,36 +1,26 @@
 package com.appquiz.proyectoappquiz;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class ListadoPreguntasActivity extends AppCompatActivity {
@@ -38,9 +28,6 @@ public class ListadoPreguntasActivity extends AppCompatActivity {
     private String TAG = "ListadoPreguntasActivity";
     private Context myContext;
     private TextView noCreadas;
-
-    CharginBroadCastReceiver charginBroadCastReceiver = new CharginBroadCastReceiver();
-    private IntentFilter chargingIntentFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,15 +73,15 @@ public class ListadoPreguntasActivity extends AppCompatActivity {
 
                 // Elimina la lista de preguntas
                 AlertDialog.Builder builder = new AlertDialog.Builder(ListadoPreguntasActivity.this);
-                builder.setMessage("¿Deseas eliminar el listado de preguntas?"); //set message
+                builder.setMessage(R.string.eliminarListado);
 
-                builder.setPositiveButton("ELIMINAR", new DialogInterface.OnClickListener(){
+                builder.setPositiveButton(R.string.eliminar, new DialogInterface.OnClickListener(){
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Repositorio.getRepositorio().consultaBorrarListadoPreguntas(myContext);
                         finish();
                     }
-                }).setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
+                }).setNegativeButton(R.string.cancelar, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         return;
@@ -103,7 +90,7 @@ public class ListadoPreguntasActivity extends AppCompatActivity {
                 return true;
             case R.id.action_export:
                 Intent emailXML = exportarXML(myContext);
-                startActivity(Intent.createChooser(emailXML, "Exportar Listado"));
+                startActivity(Intent.createChooser(emailXML, "Exportar Listado")); //error al intentar R.string.exportarListado
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -139,8 +126,8 @@ public class ListadoPreguntasActivity extends AppCompatActivity {
 
         Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
                 "mailto","rafalinyj@gmail.com", null));
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Listado de Preguntas Exportadas");
-        emailIntent.putExtra(Intent.EXTRA_TEXT, "Listado de preguntas de APPQuiz");
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, R.string.msgPreguntasExp);
+        emailIntent.putExtra(Intent.EXTRA_TEXT, R.string.msgPreguntasExpApp);
         emailIntent .putExtra(Intent.EXTRA_STREAM, path);
 
         return emailIntent;
@@ -151,8 +138,6 @@ public class ListadoPreguntasActivity extends AppCompatActivity {
         MyLog.d(TAG, "Iniciando onStart...");
 
         super.onStart();
-        chargingIntentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(charginBroadCastReceiver, chargingIntentFilter);
 
         MyLog.d(TAG, "Cerrando onStart...");
     }
@@ -194,9 +179,6 @@ public class ListadoPreguntasActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     // Acción al pulsar el elemento
                     int position = recyclerView.getChildAdapterPosition(v);
-                    /*Toast.makeText(ListadoPreguntasActivity.this,
-                            "Posición: " + listaPreguntas.get(position).getId() + " Enunciado: " + listaPreguntas.get(position).getEnunciado() +
-                                    " Categoría: " + listaPreguntas.get(position).getCategoria(), Toast.LENGTH_SHORT).show();*/
 
                     Intent intent = new Intent(ListadoPreguntasActivity.this, NuevaEditaPreguntaActivity.class);
 
@@ -282,7 +264,6 @@ public class ListadoPreguntasActivity extends AppCompatActivity {
         MyLog.d(TAG, "Iniciando onStop...");
 
         super.onStop();
-        unregisterReceiver(charginBroadCastReceiver);
 
         MyLog.d(TAG, "Cerrando onStop...");
     }

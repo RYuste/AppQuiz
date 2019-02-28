@@ -2,6 +2,8 @@ package com.appquiz.proyectoappquiz;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -27,6 +29,9 @@ public class ResumenActivity extends AppCompatActivity {
     private Animation animation;
     private ImageView imgAnimation;
     private Button btnAnimation, btnAnimationStop;
+
+    CharginBroadCastReceiver charginBroadCastReceiver = new CharginBroadCastReceiver();
+    private IntentFilter chargingIntentFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +125,9 @@ public class ResumenActivity extends AppCompatActivity {
     protected void onResume() {
         MyLog.d(TAG, "Iniciando onResume...");
         super.onResume();
+        // BroadCastReceiver
+        chargingIntentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(charginBroadCastReceiver, chargingIntentFilter);
 
         // Almacenamos el contexto de la actividad para utilizar en las clases internas
         myContext = this;
@@ -153,6 +161,8 @@ public class ResumenActivity extends AppCompatActivity {
         MyLog.d(TAG, "Iniciando onStop...");
 
         super.onStop();
+        // BroadCastReceiver
+        unregisterReceiver(charginBroadCastReceiver);
 
         MyLog.d(TAG, "Cerrando onStop...");
     }
